@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: comunity_user
+      POSTGRES_PASSWORD: comunity_password
+      POSTGRES_DB: community-manager
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  community-manager:
+    build: .
+    command: java -jar target/community-manager-0.0.1-SNAPSHOT.jar
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5434/community-manager
+      SPRING_DATASOURCE_USERNAME: comunity_user
+      SPRING_DATASOURCE_PASSWORD: comunity_password
+
+volumes:
+  postgres-data:
