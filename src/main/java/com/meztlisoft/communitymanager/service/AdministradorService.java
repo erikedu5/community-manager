@@ -10,4 +10,7 @@ public interface AdministradorService {
     UserDetailsService userDetailsService();
 
     Page<AdministradorDto> getAll(AdminFilters adminFilters);
+
+    AdministradorDto getById(long id);
+
 }

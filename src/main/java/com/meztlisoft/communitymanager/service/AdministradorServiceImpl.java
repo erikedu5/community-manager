@@ -6,7 +6,6 @@ import com.meztlisoft.communitymanager.dto.filters.AdminFilters;
 import com.meztlisoft.communitymanager.entity.AdministradorEntity;
 import com.meztlisoft.communitymanager.entity.specification.AdministradorSpecification;
 import com.meztlisoft.communitymanager.repository.AdministradorRepository;
-import com.meztlisoft.communitymanager.repository.CiudadanoRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class AdministradorServiceImpl implements AdministradorService {
 
     private final AdministradorRepository administradorRepository;
-    private final CiudadanoRepository ciudadanoRepository;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -59,5 +57,11 @@ public class AdministradorServiceImpl implements AdministradorService {
         });
 
         return new PageImpl<>(dtos, administradores.getPageable(), administradores.getTotalElements());
+    }
+
+    @Override
+    public AdministradorDto getById(long id) {
+        AdministradorEntity administradorEntity = administradorRepository.findById(id).orElse(new AdministradorEntity());
+        return objectMapper.convertValue(administradorEntity, AdministradorDto.class);
     }
 }
