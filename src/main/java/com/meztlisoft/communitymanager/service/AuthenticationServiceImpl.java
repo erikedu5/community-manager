@@ -54,14 +54,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AdministradorDto create(AdministradorDto request, String token) {
 
-        ComitivaEntity comitiva = comitivaRepository.findById(request.getComitivaId()).get();
+        ComitivaEntity comitiva = comitivaRepository.findById(request.getComitivaId())
+                .orElseThrow();
+
         if (administradorRepository.existsByRoleAndComitiva(request.getRole(), comitiva)) {
             throw new HttpServerErrorException(HttpStatus.PRECONDITION_FAILED,
                     "Este rol ya esta ocupado por otro cuidadano");
         }
 
         Claims claims = jwtService.decodeToken(token);
-        CiudadanoEntity ciudadano = ciudadanoRepository.findById(request.getCiudadanoId()).get();
+        CiudadanoEntity ciudadano = ciudadanoRepository.findById(request.getCiudadanoId())
+                .orElseThrow();
 
         var administrador = AdministradorEntity.builder().userName(request.getUserName())
                 .password(passwordEncoder.encode(request.getPassword())).fechaCreacion(LocalDateTime.now())
@@ -105,7 +108,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             administrador.setFechaActualizacion(LocalDateTime.now());
             AdministradorEntity saved = administradorRepository.save(administrador);
 
-            actionStatusResponse.setId(id);
+            actionStatusResponse.setId(saved.getId());
             actionStatusResponse.setStatus(HttpStatus.OK);
             actionStatusResponse.setDescription("Actualizado correctamente");
         } catch (Exception ex) {

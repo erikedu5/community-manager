@@ -95,7 +95,7 @@ public class CiudadanoServiceImpl implements  CiudadanoService {
             ciudadano.setFechaActualizacion(LocalDateTime.now());
             CiudadanoEntity saved = ciudadanoRepository.save(ciudadano);
 
-            actionStatusResponse.setId(id);
+            actionStatusResponse.setId(saved.getId());
             actionStatusResponse.setStatus(HttpStatus.OK);
             actionStatusResponse.setDescription("Actualizado correctamente");
         } catch (Exception ex) {

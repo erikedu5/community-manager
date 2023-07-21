@@ -76,7 +76,7 @@ public class ComitivaServiceImpl implements ComitivaService {
             comitiva.setUsuarioEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
             comitiva.setFechaActualizacion(LocalDateTime.now());
             ComitivaEntity saved = comitivaRepository.save(comitiva);
-            actionStatusResponse.setId(id);
+            actionStatusResponse.setId(saved.getId());
             actionStatusResponse.setStatus(HttpStatus.OK);
             actionStatusResponse.setDescription("Actualizado correctamente");
         } catch (Exception ex) {
