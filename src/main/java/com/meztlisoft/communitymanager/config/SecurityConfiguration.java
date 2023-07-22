@@ -2,9 +2,7 @@ package com.meztlisoft.communitymanager.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import com.meztlisoft.communitymanager.repository.CiudadanoRepository;
 import com.meztlisoft.communitymanager.service.AdministradorService;
-import com.meztlisoft.communitymanager.service.AuthenticationService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,10 +30,18 @@ public class SecurityConfiguration {
 
     private final AdministradorService administradorService;
 
+    private static final String[] AUTH_WHITE_LIST = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/v2/api-docs/**",
+            "/swagger-resources/**",
+            "/auth/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/auth/**")
+                .authorizeHttpRequests(request -> request.requestMatchers(AUTH_WHITE_LIST)
                         .permitAll().anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
