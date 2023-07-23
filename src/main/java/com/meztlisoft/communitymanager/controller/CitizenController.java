@@ -23,7 +23,7 @@ public class CitizenController {
         return ResponseEntity.ok(citizenService.create(citizenDto, token));
     }
 
-    @GetMapping("/all")
+    @PostMapping("/all")
     public ResponseEntity<Page<CitizenDto>> getAll(@RequestBody CitizenFilters citizenFilters) {
         return ResponseEntity.ok(citizenService.getAll(citizenFilters));
     }
