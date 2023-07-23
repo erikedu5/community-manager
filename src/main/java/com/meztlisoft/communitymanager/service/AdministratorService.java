@@ -1,16 +1,16 @@
 package com.meztlisoft.communitymanager.service;
 
-import com.meztlisoft.communitymanager.dto.AdministradorDto;
+import com.meztlisoft.communitymanager.dto.AdministratorDto;
 import com.meztlisoft.communitymanager.dto.filters.AdminFilters;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface AdministradorService {
+public interface AdministratorService {
 
     UserDetailsService userDetailsService();
 
-    Page<AdministradorDto> getAll(AdminFilters adminFilters);
+    Page<AdministratorDto> getAll(AdminFilters adminFilters);
 
-    AdministradorDto getById(long id);
+    AdministratorDto getById(long id);
 
 }

@@ -2,7 +2,7 @@ package com.meztlisoft.communitymanager.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-import com.meztlisoft.communitymanager.service.AdministradorService;
+import com.meztlisoft.communitymanager.service.AdministratorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private final AdministradorService administradorService;
+    private final AdministratorService administratorService;
 
     private static final String[] AUTH_WHITE_LIST = {
             "/v3/api-docs/**",
@@ -57,7 +57,7 @@ public class SecurityConfiguration {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(administradorService.userDetailsService());
+        authProvider.setUserDetailsService(administratorService.userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

@@ -2,7 +2,7 @@ package com.meztlisoft.communitymanager.config;
 
 import java.io.IOException;
 
-import com.meztlisoft.communitymanager.service.AdministradorService;
+import com.meztlisoft.communitymanager.service.AdministratorService;
 import com.meztlisoft.communitymanager.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final AdministradorService administradorService;
+    private final AdministratorService administratorService;
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUserName(jwt);
         if (StringUtils.isNotEmpty(userEmail)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = administradorService.userDetailsService()
+            UserDetails userDetails = administratorService.userDetailsService()
                     .loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

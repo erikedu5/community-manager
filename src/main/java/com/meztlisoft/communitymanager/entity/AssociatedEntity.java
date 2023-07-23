@@ -16,7 +16,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "asociados")
-public class AsociadoEntity {
+public class AssociatedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,25 +26,26 @@ public class AsociadoEntity {
     @JoinColumn(name = "ciudadano_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private CiudadanoEntity ciudadano;
+    private CitizenEntity citizen;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comitiva_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private ComitivaEntity comitiva;
+    private RetinueEntity retinue;
 
     @Column(name = "activo")
-    private Boolean activo;
+    private Boolean active;
 
     @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime creationDate;
 
     @Column(name = "fecha_actualizacion")
-    private LocalDateTime fechaActualizacion;
+    private LocalDateTime updateDate;
 
     @Column(name = "usuario_editor")
-    private Long usuarioEditor;
+    private Long userEditor;
+
 
     public Long getId() {
         return id;
@@ -54,51 +55,51 @@ public class AsociadoEntity {
         this.id = id;
     }
 
-    public CiudadanoEntity getCiudadano() {
-        return ciudadano;
+    public CitizenEntity getCitizen() {
+        return citizen;
     }
 
-    public void setCiudadano(CiudadanoEntity ciudadano) {
-        this.ciudadano = ciudadano;
+    public void setCitizen(CitizenEntity citizen) {
+        this.citizen = citizen;
     }
 
-    public ComitivaEntity getComitiva() {
-        return comitiva;
+    public RetinueEntity getRetinue() {
+        return retinue;
     }
 
-    public void setComitiva(ComitivaEntity comitiva) {
-        this.comitiva = comitiva;
+    public void setRetinue(RetinueEntity retinue) {
+        this.retinue = retinue;
     }
 
-    public Boolean getActivo() {
-        return activo;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
-    public LocalDateTime getFechaActualizacion() {
-        return fechaActualizacion;
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 
-    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-        this.fechaActualizacion = fechaActualizacion;
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
-    public Long getUsuarioEditor() {
-        return usuarioEditor;
+    public Long getUserEditor() {
+        return userEditor;
     }
 
-    public void setUsuarioEditor(Long usuarioEditor) {
-        this.usuarioEditor = usuarioEditor;
+    public void setUserEditor(Long userEditor) {
+        this.userEditor = userEditor;
     }
 }

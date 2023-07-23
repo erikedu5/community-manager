@@ -15,33 +15,33 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "entradas")
-public class EntradaEntity {
+@Table(name = "gastos")
+public class BillEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "concepto")
-    private String concepto;
+    private String concept;
 
     @Column(name = "cantidad")
-    private String cantidad;
+    private Long cost;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comitiva_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private ComitivaEntity comitiva;
+    private RetinueEntity retinue;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "administrador_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private AdministradorEntity administrador;
+    private AdministratorEntity administrator;
 
     @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime creationDate;
 
     public Long getId() {
         return id;
@@ -51,43 +51,43 @@ public class EntradaEntity {
         this.id = id;
     }
 
-    public String getConcepto() {
-        return concepto;
+    public String getConcept() {
+        return concept;
     }
 
-    public void setConcepto(String concepto) {
-        this.concepto = concepto;
+    public void setConcept(String concept) {
+        this.concept = concept;
     }
 
-    public String getCantidad() {
-        return cantidad;
+    public Long getCost() {
+        return cost;
     }
 
-    public void setCantidad(String cantidad) {
-        this.cantidad = cantidad;
+    public void setCost(Long cost) {
+        this.cost = cost;
     }
 
-    public ComitivaEntity getComitiva() {
-        return comitiva;
+    public RetinueEntity getRetinue() {
+        return retinue;
     }
 
-    public void setComitiva(ComitivaEntity comitiva) {
-        this.comitiva = comitiva;
+    public void setRetinue(RetinueEntity retinue) {
+        this.retinue = retinue;
     }
 
-    public AdministradorEntity getAdministrador() {
-        return administrador;
+    public AdministratorEntity getAdministrator() {
+        return administrator;
     }
 
-    public void setAdministrador(AdministradorEntity administrador) {
-        this.administrador = administrador;
+    public void setAdministrator(AdministratorEntity administrator) {
+        this.administrator = administrator;
     }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 }

@@ -8,27 +8,35 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+
 @Entity
-@Table(name = "asistencia_juntas")
-public class AsistenciaJuntaEntity {
+@Table(name = "juntas")
+public class MeetingEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "AsociadoId", nullable = false)
+    @JoinColumn(name = "comitiva_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private AsociadoEntity asociado;
+    private RetinueEntity retinue;
 
-    @Column(name = "asistencia")
-    private boolean asistencia;
+    @Lob
+    private String description;
+
+    @Column(name = "fecha_junta")
+    private LocalDateTime meetingDate;
+
 
     public Long getId() {
         return id;
@@ -38,19 +46,27 @@ public class AsistenciaJuntaEntity {
         this.id = id;
     }
 
-    public AsociadoEntity getAsociado() {
-        return asociado;
+    public RetinueEntity getRetinue() {
+        return retinue;
     }
 
-    public void setAsociado(AsociadoEntity asociado) {
-        this.asociado = asociado;
+    public void setRetinue(RetinueEntity retinue) {
+        this.retinue = retinue;
     }
 
-    public boolean isAsistencia() {
-        return asistencia;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAsistencia(boolean asistencia) {
-        this.asistencia = asistencia;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getMeetingDate() {
+        return meetingDate;
+    }
+
+    public void setMeetingDate(LocalDateTime meetingDate) {
+        this.meetingDate = meetingDate;
     }
 }
