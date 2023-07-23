@@ -30,7 +30,7 @@ public class RetinueController {
         return ResponseEntity.ok(retinueService.create(retinueDto, token));
     }
 
-    @GetMapping("/all")
+    @PostMapping("/all")
     public ResponseEntity<Page<RetinueDto>> getAll(@RequestBody RetinueFilters retinueFilters) {
         return ResponseEntity.ok(retinueService.getAll(retinueFilters));
     }
