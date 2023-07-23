@@ -8,34 +8,27 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-
 @Entity
-@Table(name = "juntas")
-public class JuntaEntity {
-
+@Table(name = "asistencia_juntas")
+public class AttendanceMeetingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "comitiva_id", nullable = false)
+    @JoinColumn(name = "AsociadoId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private ComitivaEntity comitiva;
+    private AssociatedEntity associated;
 
-    @Lob
-    private String descripcion;
-
-    @Column(name = "fecha_junta")
-    private LocalDateTime fechaJunta;
+    @Column(name = "asistencia")
+    private boolean attendance;
 
     public Long getId() {
         return id;
@@ -45,19 +38,19 @@ public class JuntaEntity {
         this.id = id;
     }
 
-    public ComitivaEntity getComitiva() {
-        return comitiva;
+    public AssociatedEntity getAssociated() {
+        return associated;
     }
 
-    public void setComitiva(ComitivaEntity comitiva) {
-        this.comitiva = comitiva;
+    public void setAssociated(AssociatedEntity associated) {
+        this.associated = associated;
     }
 
-    public LocalDateTime getFechaJunta() {
-        return fechaJunta;
+    public boolean isAttendance() {
+        return attendance;
     }
 
-    public void setFechaJunta(LocalDateTime fechaJunta) {
-        this.fechaJunta = fechaJunta;
+    public void setAttendance(boolean attendance) {
+        this.attendance = attendance;
     }
 }

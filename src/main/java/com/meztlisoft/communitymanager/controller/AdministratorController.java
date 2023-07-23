@@ -1,9 +1,9 @@
 package com.meztlisoft.communitymanager.controller;
 
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
-import com.meztlisoft.communitymanager.dto.AdministradorDto;
+import com.meztlisoft.communitymanager.dto.AdministratorDto;
 import com.meztlisoft.communitymanager.dto.filters.AdminFilters;
-import com.meztlisoft.communitymanager.service.AdministradorService;
+import com.meztlisoft.communitymanager.service.AdministratorService;
 import com.meztlisoft.communitymanager.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,35 +19,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/administrador")
+@RequestMapping("/administrator")
 @RequiredArgsConstructor
-public class AdministradorController {
+public class AdministratorController {
 
     private final AuthenticationService authenticationService;
-    private final AdministradorService administradorService;
+    private final AdministratorService administratorService;
 
     @PostMapping
-    public ResponseEntity<AdministradorDto> create(@RequestBody AdministradorDto request,
-                                               @RequestHeader(value = "Authorization") final String token) {
+    public ResponseEntity<AdministratorDto> create(@RequestBody AdministratorDto request,
+                                                   @RequestHeader(value = "Authorization") final String token) {
         return ResponseEntity.ok(authenticationService.create(request, token));
     }
 
     @PostMapping("/all")
-    public ResponseEntity<Page<AdministradorDto>> getAll(@RequestBody AdminFilters adminFilters) {
-        return ResponseEntity.ok(administradorService.getAll(adminFilters));
+    public ResponseEntity<Page<AdministratorDto>> getAll(@RequestBody AdminFilters adminFilters) {
+        return ResponseEntity.ok(administratorService.getAll(adminFilters));
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdministradorDto> getById(@PathVariable(name = "id") final long id) {
-        return ResponseEntity.ok(administradorService.getById(id));
+    public ResponseEntity<AdministratorDto> getById(@PathVariable(name = "id") final long id) {
+        return ResponseEntity.ok(administratorService.getById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ActionStatusResponse> update(@PathVariable(name = "id") final long id,
-                                                       @RequestBody AdministradorDto administradorDto,
+                                                       @RequestBody AdministratorDto administratorDto,
                                                        @RequestHeader(value = "Authorization") final String token) {
-        return ResponseEntity.ok(authenticationService.update(id, administradorDto, token));
+        return ResponseEntity.ok(authenticationService.update(id, administratorDto, token));
     }
 
     @DeleteMapping("/{id}")

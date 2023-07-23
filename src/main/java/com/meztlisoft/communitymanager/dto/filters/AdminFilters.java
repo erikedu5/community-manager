@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class AdminFilters {
 
-    private String nombreComitiva;
+    private String retinueName;
 
-    private String nombreCiudadano;
+    private String citizenName;
 
     private Role role;
 

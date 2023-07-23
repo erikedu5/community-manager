@@ -1,15 +1,15 @@
 package com.meztlisoft.communitymanager.service;
 
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
-import com.meztlisoft.communitymanager.dto.AdministradorDto;
+import com.meztlisoft.communitymanager.dto.AdministratorDto;
 import com.meztlisoft.communitymanager.dto.JwtAuthenticationResponse;
 import com.meztlisoft.communitymanager.dto.SignInRequest;
-import com.meztlisoft.communitymanager.entity.AdministradorEntity;
-import com.meztlisoft.communitymanager.entity.CiudadanoEntity;
-import com.meztlisoft.communitymanager.entity.ComitivaEntity;
-import com.meztlisoft.communitymanager.repository.AdministradorRepository;
-import com.meztlisoft.communitymanager.repository.CiudadanoRepository;
-import com.meztlisoft.communitymanager.repository.ComitivaRepository;
+import com.meztlisoft.communitymanager.entity.AdministratorEntity;
+import com.meztlisoft.communitymanager.entity.CitizenEntity;
+import com.meztlisoft.communitymanager.entity.RetinueEntity;
+import com.meztlisoft.communitymanager.repository.AdministratorRepository;
+import com.meztlisoft.communitymanager.repository.CitizenRepository;
+import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -28,15 +28,15 @@ import org.springframework.web.client.HttpServerErrorException;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final AdministradorRepository administradorRepository;
+    private final AdministratorRepository administratorRepository;
 
     private final JwtService jwtService;
 
     private final AuthenticationManager authenticationManager;
 
-    private final CiudadanoRepository ciudadanoRepository;
+    private final CitizenRepository citizenRepository;
 
-    private final ComitivaRepository comitivaRepository;
+    private final RetinueRepository retinueRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -44,69 +44,69 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponse signin(SignInRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-        var ciudadano = administradorRepository.findByUserName(request.getUserName())
+        var citizen = administratorRepository.findByUserName(request.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-        var jwt = jwtService.generateToken(ciudadano, ciudadano.getId());
+        var jwt = jwtService.generateToken(citizen, citizen.getId());
         return JwtAuthenticationResponse.builder().token(jwt).build();
     }
 
 
     @Override
-    public AdministradorDto create(AdministradorDto request, String token) {
+    public AdministratorDto create(AdministratorDto request, String token) {
 
-        ComitivaEntity comitiva = comitivaRepository.findById(request.getComitivaId())
+        RetinueEntity retinue = retinueRepository.findByIdAndActive(request.getRetinueId(), true)
                 .orElseThrow();
 
-        if (administradorRepository.existsByRoleAndComitiva(request.getRole(), comitiva)) {
+        if (administratorRepository.existsByRoleAndRetinue(request.getRole(), retinue)) {
             throw new HttpServerErrorException(HttpStatus.PRECONDITION_FAILED,
                     "Este rol ya esta ocupado por otro cuidadano");
         }
 
         Claims claims = jwtService.decodeToken(token);
-        CiudadanoEntity ciudadano = ciudadanoRepository.findById(request.getCiudadanoId())
+        CitizenEntity citizen = citizenRepository.findByIdAndActive(request.getCitizenId(), true)
                 .orElseThrow();
 
-        var administrador = AdministradorEntity.builder().userName(request.getUserName())
-                .password(passwordEncoder.encode(request.getPassword())).fechaCreacion(LocalDateTime.now())
-                .ciudadano(ciudadano)
-                .comitiva(comitiva)
-                .usuarioEditor(Long.parseLong(claims.get("ciudadano_id").toString()))
-                .activo(true).role(request.getRole()).build();
+        var administrator = AdministratorEntity.builder().userName(request.getUserName())
+                .password(passwordEncoder.encode(request.getPassword())).creationDate(LocalDateTime.now())
+                .citizen(citizen)
+                .retinue(retinue)
+                .userEditor(Long.parseLong(claims.get("ciudadano_id").toString()))
+                .active(true).role(request.getRole()).build();
 
-        var administradorSaved = administradorRepository.save(administrador);
+        var administratorSaved = administratorRepository.save(administrator);
 
-        AdministradorDto administradorDto = new AdministradorDto();
-        administradorDto.setPassword(null);
-        administradorDto.setRole(administradorSaved.getRole());
-        administradorDto.setCiudadano(ciudadano);
-        administradorDto.setComitiva(comitiva);
-        administradorDto.setUserName(administradorSaved.getUsername());
+        AdministratorDto administratorDto = new AdministratorDto();
+        administratorDto.setPassword(null);
+        administratorDto.setRole(administratorSaved.getRole());
+        administratorDto.setCitizen(citizen);
+        administratorDto.setRetinue(retinue);
+        administratorDto.setUserName(administratorSaved.getUsername());
 
-        return administradorDto;
+        return administratorDto;
     }
 
     @Override
-    public ActionStatusResponse update(long id, AdministradorDto administradorDto, String token) {
+    public ActionStatusResponse update(long id, AdministratorDto administratorDto, String token) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         Claims claims = jwtService.decodeToken(token);
         try {
-            AdministradorEntity administrador = administradorRepository.findById(id).orElseThrow();
+            AdministratorEntity administrator = administratorRepository.findByIdAndActive(id, true).orElseThrow();
 
-            if (StringUtils.isNotBlank(administradorDto.getUserName())) {
-                administrador.setUserName(administradorDto.getUserName());
+            if (StringUtils.isNotBlank(administratorDto.getUserName())) {
+                administrator.setUserName(administratorDto.getUserName());
             }
 
-            if (StringUtils.isNotBlank(administradorDto.getPassword())) {
-                administrador.setPassword(passwordEncoder.encode(administradorDto.getPassword()));
+            if (StringUtils.isNotBlank(administratorDto.getPassword())) {
+                administrator.setPassword(passwordEncoder.encode(administratorDto.getPassword()));
             }
 
-            if (Objects.nonNull(administradorDto.getRole())) {
-                administrador.setRole(administradorDto.getRole());
+            if (Objects.nonNull(administratorDto.getRole())) {
+                administrator.setRole(administratorDto.getRole());
             }
 
-            administrador.setUsuarioEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
-            administrador.setFechaActualizacion(LocalDateTime.now());
-            AdministradorEntity saved = administradorRepository.save(administrador);
+            administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
+            administrator.setUpdateDate(LocalDateTime.now());
+            AdministratorEntity saved = administratorRepository.save(administrator);
 
             actionStatusResponse.setId(saved.getId());
             actionStatusResponse.setStatus(HttpStatus.OK);
@@ -124,11 +124,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         Claims claims = jwtService.decodeToken(token);
         try {
-            AdministradorEntity administrador = administradorRepository.findById(id).orElseThrow();
-            administrador.setActivo(false);
-            administrador.setUsuarioEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
-            administrador.setFechaActualizacion(LocalDateTime.now());
-            administradorRepository.save(administrador);
+            AdministratorEntity administrator = administratorRepository.findByIdAndActive(id, true).orElseThrow();
+            administrator.setActive(false);
+            administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
+            administrator.setUpdateDate(LocalDateTime.now());
+            administratorRepository.save(administrator);
             actionStatusResponse.setId(id);
             actionStatusResponse.setStatus(HttpStatus.OK);
             actionStatusResponse.setDescription("Borrado correctamente");

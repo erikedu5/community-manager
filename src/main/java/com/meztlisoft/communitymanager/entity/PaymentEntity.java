@@ -16,7 +16,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "pago_cooperaciones")
-public class PagoCooperacionEntity {
+public class PaymentEntity {
 
 
     @Id
@@ -27,25 +27,25 @@ public class PagoCooperacionEntity {
     @JoinColumn(name = "asociado_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private AsociadoEntity asociado;
+    private AssociatedEntity associated;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cooperacion_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private CooperacionEntity cooperacion;
+    private CooperationEntity cooperation;
 
     @Column(name = "abono")
-    private Long abono;
+    private Long payment;
 
     @Column(name = "fecha_abono")
-    private LocalDateTime fecha_abono;
+    private LocalDateTime paymentDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "administrador_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private AdministradorEntity administrador;
+    private AdministratorEntity administrator;
 
     public Long getId() {
         return id;
@@ -55,43 +55,43 @@ public class PagoCooperacionEntity {
         this.id = id;
     }
 
-    public AsociadoEntity getAsociado() {
-        return asociado;
+    public AssociatedEntity getAssociated() {
+        return associated;
     }
 
-    public void setAsociado(AsociadoEntity asociado) {
-        this.asociado = asociado;
+    public void setAssociated(AssociatedEntity associated) {
+        this.associated = associated;
     }
 
-    public CooperacionEntity getCooperacion() {
-        return cooperacion;
+    public CooperationEntity getCooperation() {
+        return cooperation;
     }
 
-    public void setCooperacion(CooperacionEntity cooperacion) {
-        this.cooperacion = cooperacion;
+    public void setCooperation(CooperationEntity cooperation) {
+        this.cooperation = cooperation;
     }
 
-    public Long getAbono() {
-        return abono;
+    public Long getPayment() {
+        return payment;
     }
 
-    public void setAbono(Long abono) {
-        this.abono = abono;
+    public void setPayment(Long payment) {
+        this.payment = payment;
     }
 
-    public LocalDateTime getFecha_abono() {
-        return fecha_abono;
+    public LocalDateTime getPaymentDate() {
+        return paymentDate;
     }
 
-    public void setFecha_abono(LocalDateTime fecha_abono) {
-        this.fecha_abono = fecha_abono;
+    public void setPaymentDate(LocalDateTime paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
-    public AdministradorEntity getAdministrador() {
-        return administrador;
+    public AdministratorEntity getAdministrator() {
+        return administrator;
     }
 
-    public void setAdministrador(AdministradorEntity administrador) {
-        this.administrador = administrador;
+    public void setAdministrator(AdministratorEntity administrator) {
+        this.administrator = administrator;
     }
 }
