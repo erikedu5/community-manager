@@ -1,34 +1,26 @@
 package com.meztlisoft.communitymanager.service;
 
-import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
-import com.meztlisoft.communitymanager.dto.AdministratorDto;
-import com.meztlisoft.communitymanager.dto.JwtAuthenticationResponse;
-import com.meztlisoft.communitymanager.dto.SignInRequest;
-import com.meztlisoft.communitymanager.entity.AdministratorEntity;
-import com.meztlisoft.communitymanager.entity.CitizenEntity;
-import com.meztlisoft.communitymanager.entity.RetinueEntity;
-import com.meztlisoft.communitymanager.repository.AdministratorRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meztlisoft.communitymanager.dto.*;
+import com.meztlisoft.communitymanager.entity.UserEntity;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
-import com.meztlisoft.communitymanager.repository.RetinueRepository;
-import io.jsonwebtoken.Claims;
-import java.time.LocalDateTime;
+import com.meztlisoft.communitymanager.repository.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class AuthenticationServiceImpl implements AuthenticationService {
-
-    private final AdministratorRepository administratorRepository;
 
     private final JwtService jwtService;
 
@@ -36,77 +28,62 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final CitizenRepository citizenRepository;
 
-    private final RetinueRepository retinueRepository;
+    private final ObjectMapper objectMapper;
 
     private final PasswordEncoder passwordEncoder;
 
+    private final UserRepository userRepository;
+
     @Override
     public JwtAuthenticationResponse signin(SignInRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-        var citizen = administratorRepository.findByUserName(request.getUserName())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-        var jwt = jwtService.generateToken(citizen, citizen.getId());
-        return JwtAuthenticationResponse.builder().token(jwt).build();
-    }
-
-
-    @Override
-    public AdministratorDto create(AdministratorDto request, String token) {
-
-        RetinueEntity retinue = retinueRepository.findByIdAndActive(request.getRetinueId(), true)
-                .orElseThrow();
-
-        if (administratorRepository.existsByRoleAndRetinue(request.getRole(), retinue)) {
-            throw new HttpServerErrorException(HttpStatus.PRECONDITION_FAILED,
-                    "Este rol ya esta ocupado por otro cuidadano");
-        }
-
-        Claims claims = jwtService.decodeToken(token);
-        CitizenEntity citizen = citizenRepository.findByIdAndActive(request.getCitizenId(), true)
-                .orElseThrow();
-
-        var administrator = AdministratorEntity.builder().userName(request.getUserName())
-                .password(passwordEncoder.encode(request.getPassword())).creationDate(LocalDateTime.now())
-                .citizen(citizen)
-                .retinue(retinue)
-                .userEditor(Long.parseLong(claims.get("ciudadano_id").toString()))
-                .active(true).role(request.getRole()).build();
-
-        var administratorSaved = administratorRepository.save(administrator);
-
-        AdministratorDto administratorDto = new AdministratorDto();
-        administratorDto.setPassword(null);
-        administratorDto.setRole(administratorSaved.getRole());
-        administratorDto.setCitizen(citizen);
-        administratorDto.setRetinue(retinue);
-        administratorDto.setUserName(administratorSaved.getUsername());
-
-        return administratorDto;
-    }
-
-    @Override
-    public ActionStatusResponse update(long id, AdministratorDto administratorDto, String token) {
-        ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
-        Claims claims = jwtService.decodeToken(token);
         try {
-            AdministratorEntity administrator = administratorRepository.findByIdAndActive(id, true).orElseThrow();
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
+            var citizen = userRepository.findByUserName(request.getUserName())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+            var jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId());
+            return JwtAuthenticationResponse.builder().token(jwt).build();
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        return null;
+    }
 
-            if (StringUtils.isNotBlank(administratorDto.getUserName())) {
-                administrator.setUserName(administratorDto.getUserName());
+    @Override
+    public UserDto create(UserDto request) {
+        UserEntity user = new UserEntity();
+        user.setUserName(request.getUserName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setActive(request.getActive());
+        user.setCitizen(citizenRepository.findByIdAndActive(request.getCitizenId(), true).orElseThrow());
+        UserEntity saved = userRepository.save(user);
+        UserDto userDto = objectMapper.convertValue(saved, UserDto.class);
+        userDto.setPassword(null);
+        return userDto;
+    }
+
+    @Override
+    public ActionStatusResponse update(long id, UserDto userDto) {
+        ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
+        try {
+            UserEntity user = userRepository.findById(id).orElseThrow();
+
+            if (StringUtils.isNotBlank(userDto.getUserName())) {
+                user.setUserName(userDto.getUserName());
             }
 
-            if (StringUtils.isNotBlank(administratorDto.getPassword())) {
-                administrator.setPassword(passwordEncoder.encode(administratorDto.getPassword()));
+            if (StringUtils.isNotBlank(userDto.getPassword())) {
+                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             }
 
-            if (Objects.nonNull(administratorDto.getRole())) {
-                administrator.setRole(administratorDto.getRole());
+            if (Objects.nonNull(userDto.getActive())) {
+                user.setActive(userDto.getActive());
             }
 
-            administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
-            administrator.setUpdateDate(LocalDateTime.now());
-            AdministratorEntity saved = administratorRepository.save(administrator);
+            if (Objects.nonNull(userDto.getCitizenId())) {
+                user.setCitizen(citizenRepository.findByIdAndActive(userDto.getCitizenId(), true).orElseThrow());
+            }
+            UserEntity saved = userRepository.save(user);
 
             actionStatusResponse.setId(saved.getId());
             actionStatusResponse.setStatus(HttpStatus.OK);
@@ -120,15 +97,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ActionStatusResponse delete(long id, String token) {
+    public ActionStatusResponse delete(long id) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
-        Claims claims = jwtService.decodeToken(token);
         try {
-            AdministratorEntity administrator = administratorRepository.findByIdAndActive(id, true).orElseThrow();
-            administrator.setActive(false);
-            administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
-            administrator.setUpdateDate(LocalDateTime.now());
-            administratorRepository.save(administrator);
+            UserEntity user = userRepository.findById(id).orElseThrow();
+            user.setActive(false);
+            userRepository.save(user);
             actionStatusResponse.setId(id);
             actionStatusResponse.setStatus(HttpStatus.OK);
             actionStatusResponse.setDescription("Borrado correctamente");

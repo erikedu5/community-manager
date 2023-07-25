@@ -4,7 +4,6 @@ import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.AdministratorDto;
 import com.meztlisoft.communitymanager.dto.filters.AdminFilters;
 import com.meztlisoft.communitymanager.service.AdministratorService;
-import com.meztlisoft.communitymanager.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
@@ -23,13 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdministratorController {
 
-    private final AuthenticationService authenticationService;
     private final AdministratorService administratorService;
 
     @PostMapping
     public ResponseEntity<AdministratorDto> create(@RequestBody AdministratorDto request,
                                                    @RequestHeader(value = "Authorization") final String token) {
-        return ResponseEntity.ok(authenticationService.create(request, token));
+        return ResponseEntity.ok(administratorService.create(request, token));
     }
 
     @PostMapping("/all")
@@ -47,12 +45,12 @@ public class AdministratorController {
     public ResponseEntity<ActionStatusResponse> update(@PathVariable(name = "id") final long id,
                                                        @RequestBody AdministratorDto administratorDto,
                                                        @RequestHeader(value = "Authorization") final String token) {
-        return ResponseEntity.ok(authenticationService.update(id, administratorDto, token));
+        return ResponseEntity.ok(administratorService.update(id, administratorDto, token));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ActionStatusResponse> delete(@PathVariable(name = "id") final long id,
                                                        @RequestHeader(value = "Authorization") final String token) {
-        return ResponseEntity.ok(authenticationService.delete(id, token));
+        return ResponseEntity.ok(administratorService.delete(id, token));
     }
 }

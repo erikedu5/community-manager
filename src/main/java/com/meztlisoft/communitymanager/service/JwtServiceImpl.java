@@ -1,6 +1,5 @@
 package com.meztlisoft.communitymanager.service;
 
-import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -26,8 +25,6 @@ public class JwtServiceImpl implements JwtService {
     @Value("${token.signing.key}")
     private String jwtSigningKey;
 
-    private final CitizenRepository citizenRepository;
-
     @Override
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -36,8 +33,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateToken(UserDetails userDetails, Long id) {
         HashMap<String, Object> claims = new HashMap<>();
-        var citizen = citizenRepository.findByIdAndActive(id, true).orElseThrow();
-        claims.put("ciudadano_id", citizen.getId());
+        claims.put("ciudadano_id", id);
         claims.put("rol", userDetails.getAuthorities());
         return generateToken(claims, userDetails);
     }

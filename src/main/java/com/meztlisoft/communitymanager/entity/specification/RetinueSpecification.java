@@ -19,7 +19,7 @@ public class RetinueSpecification {
             }
 
             predicates.add(criteriaBuilder.gt(root.get("id"), 0));
-            predicates.add(criteriaBuilder.equal(root.get("activo"), true));
+            predicates.add(criteriaBuilder.equal(root.get("active"), true));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

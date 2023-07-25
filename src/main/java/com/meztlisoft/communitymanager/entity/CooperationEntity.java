@@ -10,7 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -32,16 +33,25 @@ public class CooperationEntity {
     private String concept;
 
     @Column(name = "fecha_limite")
-    private Date limitDate;
+    private LocalDate limitDate;
 
     @Column(name = "fecha_incio")
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "activo")
     private Boolean active;
 
     @Column(name = "costo_base_cooperacion")
     private Long baseCooperation;
+
+    @Column(name = "fecha_creacion")
+    private LocalDateTime creationDate;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDateTime updateDate;
+
+    @Column(name = "usuario_editor")
+    private Long userEditor;
 
     public Long getId() {
         return id;
@@ -67,19 +77,19 @@ public class CooperationEntity {
         this.concept = concept;
     }
 
-    public Date getLimitDate() {
+    public LocalDate getLimitDate() {
         return limitDate;
     }
 
-    public void setLimitDate(Date limitDate) {
+    public void setLimitDate(LocalDate limitDate) {
         this.limitDate = limitDate;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
@@ -97,5 +107,29 @@ public class CooperationEntity {
 
     public void setBaseCooperation(Long baseCooperation) {
         this.baseCooperation = baseCooperation;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public Long getUserEditor() {
+        return userEditor;
+    }
+
+    public void setUserEditor(Long userEditor) {
+        this.userEditor = userEditor;
     }
 }
