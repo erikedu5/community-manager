@@ -1,11 +1,12 @@
 package com.meztlisoft.communitymanager.dto;
 
+import com.meztlisoft.communitymanager.entity.RoleEntity;
 import lombok.Data;
-import java.util.List;
+import java.util.Map;
 
 @Data
 public class AssociationsDto {
 
-    private List<Long> citizenIds;
+    private Map<Long, RoleEntity> asociation;
 
 }

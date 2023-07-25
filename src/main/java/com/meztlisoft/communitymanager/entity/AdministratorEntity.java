@@ -1,11 +1,8 @@
 package com.meztlisoft.communitymanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meztlisoft.communitymanager.dto.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,23 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "administradores")
-public class AdministratorEntity implements UserDetails {
+public class AdministratorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,12 +34,6 @@ public class AdministratorEntity implements UserDetails {
     @JsonIgnore
     private RetinueEntity retinue;
 
-    @Column(name = "user_name")
-    private String userName;
-
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "fecha_creacion")
     private LocalDateTime creationDate;
 
@@ -66,38 +46,11 @@ public class AdministratorEntity implements UserDetails {
     @Column(name = "activo")
     private boolean active;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return active;
-    }
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private RoleEntity role;
 
     public Long getId() {
         return id;
@@ -121,22 +74,6 @@ public class AdministratorEntity implements UserDetails {
 
     public void setRetinue(RetinueEntity retinue) {
         this.retinue = retinue;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public LocalDateTime getCreationDate() {
@@ -171,11 +108,11 @@ public class AdministratorEntity implements UserDetails {
         this.active = active;
     }
 
-    public Role getRole() {
+    public RoleEntity getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEntity role) {
         this.role = role;
     }
 }

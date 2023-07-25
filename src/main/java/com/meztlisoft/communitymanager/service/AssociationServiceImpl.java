@@ -3,12 +3,9 @@ package com.meztlisoft.communitymanager.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.*;
 import com.meztlisoft.communitymanager.dto.filters.AssociatedFilters;
-import com.meztlisoft.communitymanager.entity.AssociatedEntity;
-import com.meztlisoft.communitymanager.entity.RetinueEntity;
+import com.meztlisoft.communitymanager.entity.*;
 import com.meztlisoft.communitymanager.entity.specification.AssociationSpecification;
-import com.meztlisoft.communitymanager.repository.AssociationRepository;
-import com.meztlisoft.communitymanager.repository.CitizenRepository;
-import com.meztlisoft.communitymanager.repository.RetinueRepository;
+import com.meztlisoft.communitymanager.repository.*;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,9 +23,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AssociationServiceImpl implements  AssociationService {
 
+    private final AdministratorRepository administratorRepository;
     private final AssociationRepository associationRepository;
     private final CitizenRepository citizenRepository;
     private final RetinueRepository retinueRepository;
+    private final RoleRepository roleRepository;
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
 
@@ -41,20 +40,35 @@ public class AssociationServiceImpl implements  AssociationService {
         try {
             List<AssociatedEntity> associatedEntities = new ArrayList<>();
             RetinueEntity retinue = retinueRepository.findByIdAndActive(id, true).orElseThrow();
-            for (Long idCitizen : associationsDto.getCitizenIds()) {
+            List<AdministratorEntity> admins = new ArrayList<>();
+            for (Map.Entry<Long, RoleEntity> association : associationsDto.getAsociation().entrySet()) {
                 try {
+                    CitizenEntity citizen = citizenRepository.findByIdAndActive(association.getKey(), true).orElseThrow();
                     AssociatedEntity associatedEntity = new AssociatedEntity();
                     associatedEntity.setActive(true);
                     associatedEntity.setCreationDate(LocalDateTime.now());
-                    associatedEntity.setCitizen(citizenRepository.findByIdAndActive(idCitizen, true).orElseThrow());
+                    associatedEntity.setCitizen(citizen);
                     associatedEntity.setRetinue(retinue);
                     associatedEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
                     associatedEntities.add(associatedEntity);
+                    if (Objects.nonNull(association.getValue())) {
+                        AdministratorEntity administrator = new AdministratorEntity();
+                        administrator.setRole(roleRepository.findById(association.getValue().getId()).orElseThrow());
+                        administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
+                        administrator.setActive(true);
+                        administrator.setCreationDate(LocalDateTime.now());
+                        administrator.setCitizen(citizen);
+                        administrator.setRetinue(retinue);
+                        admins.add(administrator);
+                    }
                 } catch (Exception ex) {
-                    errors.put(HttpStatus.PRECONDITION_FAILED, "No se encontró el cuidadano con el id " + idCitizen);
+                    errors.put(HttpStatus.PRECONDITION_FAILED, "No se encontró el cuidadano con el id " + association.getKey());
                 }
             }
             associationRepository.saveAll(associatedEntities);
+            if (admins.size() > 0) {
+                administratorRepository.saveAll(admins);
+            }
             if (errors.size() > 0) {
                 actionStatusResponse.setStatus(HttpStatus.PARTIAL_CONTENT);
                 actionStatusResponse.setDescription("Associacion creada con errores");

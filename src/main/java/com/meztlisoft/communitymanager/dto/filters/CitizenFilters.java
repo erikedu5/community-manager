@@ -10,6 +10,7 @@ public class CitizenFilters {
     private String description;
     private String curp;
     private String address;
+    private String userName;
     private RangeDates rangeBirthdays;
     private int page;
     private int size;

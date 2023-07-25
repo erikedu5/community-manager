@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class OpenAPIConfig {
 
-
     @Value("${openapi.dev-url}")
     private String devUrl;
 

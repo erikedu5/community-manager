@@ -22,13 +22,19 @@ public class AttendanceMeetingEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "AsociadoId", nullable = false)
+    @JoinColumn(name = "asociado_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private AssociatedEntity associated;
 
     @Column(name = "asistencia")
     private boolean attendance;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "junta_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private MeetingEntity meeting;
 
     public Long getId() {
         return id;
@@ -52,5 +58,13 @@ public class AttendanceMeetingEntity {
 
     public void setAttendance(boolean attendance) {
         this.attendance = attendance;
+    }
+
+    public MeetingEntity getMeeting() {
+        return meeting;
+    }
+
+    public void setMeeting(MeetingEntity meeting) {
+        this.meeting = meeting;
     }
 }
