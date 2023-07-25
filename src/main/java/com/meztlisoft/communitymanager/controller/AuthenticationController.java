@@ -28,10 +28,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.create(userDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/changePassword/{id}")
     public ResponseEntity<ActionStatusResponse> update(@PathVariable(name = "id") final long id,
                                                        @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(authenticationService.update(id, userDto));
+        return ResponseEntity.ok(authenticationService.change_password(id, userDto));
     }
 
     @DeleteMapping("/{id}")
