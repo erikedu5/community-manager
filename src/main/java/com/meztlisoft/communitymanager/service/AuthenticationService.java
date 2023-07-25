@@ -11,7 +11,7 @@ public interface AuthenticationService {
 
     UserDto create(UserDto request);
 
-    ActionStatusResponse update(long id, UserDto userDto);
+    ActionStatusResponse change_password(long id, UserDto userDto);
 
     ActionStatusResponse delete(long id);
 }

@@ -1,13 +1,14 @@
 package com.meztlisoft.communitymanager.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meztlisoft.communitymanager.dto.*;
+import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
+import com.meztlisoft.communitymanager.dto.JwtAuthenticationResponse;
+import com.meztlisoft.communitymanager.dto.SignInRequest;
+import com.meztlisoft.communitymanager.dto.UserDto;
 import com.meztlisoft.communitymanager.entity.UserEntity;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import com.meztlisoft.communitymanager.repository.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -27,8 +28,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     private final CitizenRepository citizenRepository;
-
-    private final ObjectMapper objectMapper;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -51,38 +50,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserDto create(UserDto request) {
-        UserEntity user = new UserEntity();
-        user.setUserName(request.getUserName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setActive(request.getActive());
-        user.setCitizen(citizenRepository.findByIdAndActive(request.getCitizenId(), true).orElseThrow());
-        UserEntity saved = userRepository.save(user);
-        UserDto userDto = objectMapper.convertValue(saved, UserDto.class);
-        userDto.setPassword(null);
-        return userDto;
+        try {
+            UserEntity user = new UserEntity();
+            user.setUserName(request.getUserName());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setCitizen(citizenRepository.findByIdAndActive(request.getCitizenId(), true).orElseThrow());
+            user.setActive(true);
+            UserEntity saved = userRepository.save(user);
+
+            UserDto userDto = new UserDto();
+            userDto.setUserName(saved.getUsername());
+            userDto.setCitizenId(saved.getCitizen().getId());
+            userDto.setPassword(null);
+            return userDto;
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        return new UserDto();
     }
 
     @Override
-    public ActionStatusResponse update(long id, UserDto userDto) {
+    public ActionStatusResponse change_password(long id, UserDto userDto) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         try {
             UserEntity user = userRepository.findById(id).orElseThrow();
-
-            if (StringUtils.isNotBlank(userDto.getUserName())) {
-                user.setUserName(userDto.getUserName());
-            }
 
             if (StringUtils.isNotBlank(userDto.getPassword())) {
                 user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             }
 
-            if (Objects.nonNull(userDto.getActive())) {
-                user.setActive(userDto.getActive());
-            }
-
-            if (Objects.nonNull(userDto.getCitizenId())) {
-                user.setCitizen(citizenRepository.findByIdAndActive(userDto.getCitizenId(), true).orElseThrow());
-            }
             UserEntity saved = userRepository.save(user);
 
             actionStatusResponse.setId(saved.getId());

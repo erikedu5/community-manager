@@ -3,7 +3,7 @@ package com.meztlisoft.communitymanager.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="Role")
+@Table(name="Role", uniqueConstraints =  @UniqueConstraint(columnNames = { "nombre" }))
 public class RoleEntity {
 
     @Id

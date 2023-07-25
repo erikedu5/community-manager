@@ -17,7 +17,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints =  @UniqueConstraint(columnNames = { "user_name", "ciudadano_id" }))
 @Data
 public class UserEntity implements UserDetails {
 
