@@ -9,9 +9,14 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AssociationRepository extends JpaRepository<AssociatedEntity, Long>, JpaSpecificationExecutor<AssociatedEntity> {
 
     @Query(value = "Select * from asociados where comitiva_id = ?", nativeQuery = true)
     Page<AssociatedEntity> findAllByRetinueId(long id, Pageable page, Specification<AssociatedEntity> specification);
+
+    @Query(value = "Select * from asociados where comitiva_id = ?", nativeQuery = true)
+    List<AssociatedEntity> findAllByRetinueId(long id);
 }

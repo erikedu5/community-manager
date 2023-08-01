@@ -32,7 +32,7 @@ public class AssociationServiceImpl implements  AssociationService {
     private final JwtService jwtService;
 
     @Override
-    public ActionStatusResponse create(long id, AssociationsDto associationsDto, String token) {
+    public ActionStatusResponse create(long id, List<AssociationsDto> associationsDto, String token) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         actionStatusResponse.setId(id);
         Claims claims = jwtService.decodeToken(token);
@@ -41,9 +41,9 @@ public class AssociationServiceImpl implements  AssociationService {
             List<AssociatedEntity> associatedEntities = new ArrayList<>();
             RetinueEntity retinue = retinueRepository.findByIdAndActive(id, true).orElseThrow();
             List<AdministratorEntity> admins = new ArrayList<>();
-            for (Map.Entry<Long, RoleEntity> association : associationsDto.getAsociation().entrySet()) {
+            for (AssociationsDto association : associationsDto) {
                 try {
-                    CitizenEntity citizen = citizenRepository.findByIdAndActive(association.getKey(), true).orElseThrow();
+                    CitizenEntity citizen = citizenRepository.findByIdAndActive(association.getCitizenId(), true).orElseThrow();
                     AssociatedEntity associatedEntity = new AssociatedEntity();
                     associatedEntity.setActive(true);
                     associatedEntity.setCreationDate(LocalDateTime.now());
@@ -51,9 +51,9 @@ public class AssociationServiceImpl implements  AssociationService {
                     associatedEntity.setRetinue(retinue);
                     associatedEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
                     associatedEntities.add(associatedEntity);
-                    if (Objects.nonNull(association.getValue())) {
+                    if (Objects.nonNull(association.getRoleId())) {
                         AdministratorEntity administrator = new AdministratorEntity();
-                        administrator.setRole(roleRepository.findById(association.getValue().getId()).orElseThrow());
+                        administrator.setRole(roleRepository.findById(association.getRoleId()).orElseThrow());
                         administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
                         administrator.setActive(true);
                         administrator.setCreationDate(LocalDateTime.now());
@@ -62,7 +62,7 @@ public class AssociationServiceImpl implements  AssociationService {
                         admins.add(administrator);
                     }
                 } catch (Exception ex) {
-                    errors.put(HttpStatus.PRECONDITION_FAILED, "No se encontró el cuidadano con el id " + association.getKey());
+                    errors.put(HttpStatus.PRECONDITION_FAILED, "No se encontró el cuidadano con el id " + association.getCitizenId());
                 }
             }
             associationRepository.saveAll(associatedEntities);

@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import com.meztlisoft.communitymanager.repository.RoleRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -39,6 +41,7 @@ public class AdministratorServiceImpl implements AdministratorService {
     private final JwtService jwtService;
     private final RetinueRepository retinueRepository;
     private final CitizenRepository citizenRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public AdministratorDto create(AdministratorDto request, String token) {
@@ -55,12 +58,16 @@ public class AdministratorServiceImpl implements AdministratorService {
         CitizenEntity citizen = citizenRepository.findByIdAndActive(request.getCitizenId(), true)
                 .orElseThrow();
 
-        var administrator = objectMapper.convertValue(request, AdministratorEntity.class);
+        AdministratorEntity administrator = new AdministratorEntity();
+        administrator.setRetinue(retinue);
+        administrator.setCreationDate(LocalDateTime.now());
+        administrator.setRole(roleRepository.findById(request.getRoleId()).orElseThrow());
+        administrator.setCitizen(citizen);
+        administrator.setActive(true);
         administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
-
         var administratorSaved = administratorRepository.save(administrator);
+
         AdministratorDto administratorDto = new AdministratorDto();
-        administratorDto.setPassword(null);
         administratorDto.setRole(administratorSaved.getRole());
         administratorDto.setCitizen(citizen);
         administratorDto.setRetinue(retinue);
@@ -76,7 +83,6 @@ public class AdministratorServiceImpl implements AdministratorService {
         List<AdministratorDto> dtos = new ArrayList<>();
         administrators.stream().forEach(admin -> {
             AdministratorDto administratorDto = new AdministratorDto();
-            administratorDto.setPassword(null);
             administratorDto.setRole(admin.getRole());
             administratorDto.setCitizen(admin.getCitizen());
             administratorDto.setRetinue(admin.getRetinue());

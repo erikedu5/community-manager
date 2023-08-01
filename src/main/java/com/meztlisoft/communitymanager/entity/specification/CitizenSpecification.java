@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class CitizenSpecification {
 
-    public static Specification<CitizenEntity> getFilteredCitizen(CitizenFilters params) {
+    public static Specification<CitizenEntity> getFilteredCitizen(CitizenFilters params, List<Long> citizenIds) {
         return (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -35,7 +35,15 @@ public class CitizenSpecification {
                         params.getRangeBirthdays().getLowerLimit()));
             }
 
-            predicates.add(criteriaBuilder.gt(root.get("id"), 0));
+            if (!citizenIds.isEmpty()) {
+                final Predicate[] predicatesList =
+                        citizenIds.stream()
+                                .map(citizenId -> criteriaBuilder.equal(root.get("id"), citizenId))
+                                .toArray(Predicate[]::new);
+                return criteriaBuilder.or(predicatesList);
+            }
+
+            //predicates.add(criteriaBuilder.gt(root.get("id"), 0));
             predicates.add(criteriaBuilder.equal(root.get("active"), true));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

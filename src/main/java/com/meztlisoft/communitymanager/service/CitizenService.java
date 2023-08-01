@@ -9,7 +9,7 @@ public interface CitizenService {
 
     CitizenDto create(CitizenDto citizen, String token);
 
-    Page<CitizenDto> getAll(CitizenFilters citizenFilters);
+    Page<CitizenDto> getAll(CitizenFilters citizenFilters, Long retinueId);
 
     CitizenDto getById(long id);
 

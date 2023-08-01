@@ -31,10 +31,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(UserDetails userDetails, Long id) {
+    public String generateToken(UserDetails userDetails, Long id, Map<Long, String> retinues) {
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("ciudadano_id", id);
         claims.put("rol", userDetails.getAuthorities());
+        claims.put("retinues", retinues);
         return generateToken(claims, userDetails);
     }
 
