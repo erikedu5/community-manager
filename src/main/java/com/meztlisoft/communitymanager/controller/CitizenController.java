@@ -24,8 +24,9 @@ public class CitizenController {
     }
 
     @PostMapping("/all")
-    public ResponseEntity<Page<CitizenDto>> getAll(@RequestBody CitizenFilters citizenFilters) {
-        return ResponseEntity.ok(citizenService.getAll(citizenFilters));
+    public ResponseEntity<Page<CitizenDto>> getAll(@RequestBody CitizenFilters citizenFilters,
+                                                   @RequestHeader(value = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(citizenService.getAll(citizenFilters, retinueId));
     }
 
     @GetMapping("/{id}")

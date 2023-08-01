@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdministratorDto {
 
-    private String userName;
-    private String password;
     private RoleEntity role;
     private Long citizenId;
     private Long retinueId;

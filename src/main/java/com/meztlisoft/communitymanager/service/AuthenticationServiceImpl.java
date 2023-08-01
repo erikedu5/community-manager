@@ -5,6 +5,7 @@ import com.meztlisoft.communitymanager.dto.JwtAuthenticationResponse;
 import com.meztlisoft.communitymanager.dto.SignInRequest;
 import com.meztlisoft.communitymanager.dto.UserDto;
 import com.meztlisoft.communitymanager.entity.UserEntity;
+import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import com.meztlisoft.communitymanager.repository.UserRepository;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
 
+    private final AdministratorRepository administratorRepository;
+
     @Override
     public JwtAuthenticationResponse signin(SignInRequest request) {
         try {
@@ -40,7 +43,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
             var citizen = userRepository.findByUserName(request.getUserName())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-            var jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId());
+            Map<Long, String> retinues = new HashMap<>();
+            if (citizen.getCitizen().getId().equals(0L)) {
+               administratorRepository.findAllActive()
+                   .forEach(admin -> retinues.put(admin.getRetinue().getId(), admin.getRetinue().getName()));
+            } else {
+                administratorRepository.findByCitizenAndActive(citizen.getCitizen(), true)
+                    .forEach(admin -> retinues.put(admin.getRetinue().getId(), admin.getRetinue().getName()));
+            }
+            var jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId(), retinues);
             return JwtAuthenticationResponse.builder().token(jwt).build();
         } catch (Exception e) {
             log.info(e.getMessage());

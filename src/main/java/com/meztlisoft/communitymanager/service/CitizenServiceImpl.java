@@ -6,20 +6,20 @@ import com.meztlisoft.communitymanager.dto.CitizenDto;
 import com.meztlisoft.communitymanager.dto.filters.CitizenFilters;
 import com.meztlisoft.communitymanager.entity.CitizenEntity;
 import com.meztlisoft.communitymanager.entity.specification.CitizenSpecification;
+import com.meztlisoft.communitymanager.repository.AssociationRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class CitizenServiceImpl implements CitizenService {
 
     private final CitizenRepository citizenRepository;
@@ -34,6 +35,8 @@ public class CitizenServiceImpl implements CitizenService {
     private final ObjectMapper objectMapper;
 
     private final JwtService jwtService;
+
+    private final AssociationRepository associationRepository;
 
     @Override
     public CitizenDto create(CitizenDto citizen, String token) {
@@ -47,10 +50,21 @@ public class CitizenServiceImpl implements CitizenService {
     }
 
     @Override
-    public Page<CitizenDto> getAll(CitizenFilters citizenFilters) {
+    public Page<CitizenDto> getAll(CitizenFilters citizenFilters, Long retinueId) {
         Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize());
-        Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters);
-        Page<CitizenEntity> citizens = citizenRepository.findAll(specification, paging);
+
+        List<Long> citizenIds = new ArrayList<>();
+        if (!retinueId.equals(0L)) {
+            associationRepository.findAllByRetinueId(retinueId).forEach(asociated -> citizenIds.add(asociated.getCitizen().getId()));
+        }
+        Page<CitizenEntity> citizens = new PageImpl<>(Collections.emptyList());
+
+        if (!citizenIds.isEmpty()) {
+            Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters, citizenIds);
+            log.info("Query citizens");
+            citizens = citizenRepository.findAll(specification, paging);
+            log.info("End query");
+        }
         List<CitizenDto> dtos = new ArrayList<>();
         for (CitizenEntity citizen : citizens) {
             dtos.add(objectMapper.convertValue(citizen, CitizenDto.class));

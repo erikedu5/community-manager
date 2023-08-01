@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/associated")
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class AssociatedController {
 
     @PostMapping("/{id}")
     public ResponseEntity<ActionStatusResponse> generateAssociations(@PathVariable(name = "id") final long id,
-                                                                     @RequestBody AssociationsDto associationsDto,
+                                                                     @RequestBody List<AssociationsDto> associationsDto,
                                                                      @RequestHeader(value = "Authorization") final String token) {
         return ResponseEntity.ok(associationService.create(id, associationsDto, token));
     }
