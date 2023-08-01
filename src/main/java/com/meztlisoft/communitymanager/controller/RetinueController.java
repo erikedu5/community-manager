@@ -1,8 +1,9 @@
 package com.meztlisoft.communitymanager.controller;
 
-import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
-import com.meztlisoft.communitymanager.dto.RetinueDto;
+import com.meztlisoft.communitymanager.dto.*;
+import com.meztlisoft.communitymanager.dto.filters.AssociatedFilters;
 import com.meztlisoft.communitymanager.dto.filters.RetinueFilters;
+import com.meztlisoft.communitymanager.service.AssociationService;
 import com.meztlisoft.communitymanager.service.RetinueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RetinueController {
 
     private final RetinueService retinueService;
+
+    private final AssociationService associationService;
 
     @PostMapping
     public ResponseEntity<RetinueDto> createComitiva(@RequestBody RetinueDto retinueDto,
@@ -51,6 +54,19 @@ public class RetinueController {
     public ResponseEntity<ActionStatusResponse> delete(@RequestHeader(value = "Authorization") final String token,
                                                        @PathVariable(name = "id") final long id) {
         return ResponseEntity.ok(retinueService.delete(id, token));
+    }
+
+    @PostMapping("/associate/{id}")
+    public ResponseEntity<ActionStatusResponse> generateAssociations(@PathVariable(name = "id") final long id,
+                                                                     @RequestBody AssociationWrapper associationsDto,
+                                                                     @RequestHeader(value = "Authorization") final String token) {
+        return ResponseEntity.ok(associationService.create(id, associationsDto.getDetail(), token));
+    }
+
+    @PostMapping("/getAssociate/{id}")
+    public ResponseEntity<Page<AssociatedDto>> getAssociatedCitizen(@PathVariable(name = "id") final long id,
+                                                                    @RequestBody AssociatedFilters associatedFilters) {
+        return ResponseEntity.ok(associationService.getCitizenAssociated(id, associatedFilters));
     }
 
 }

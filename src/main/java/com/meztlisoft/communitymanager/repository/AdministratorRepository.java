@@ -24,4 +24,7 @@ public interface AdministratorRepository extends JpaRepository<AdministratorEnti
     Optional<AdministratorEntity> findByIdAndActive(long id, boolean active);
 
     List<AdministratorEntity> findByCitizenAndActive(CitizenEntity citizen, boolean active);
+
+    @Query(value = "SELECT * FROM administradores where ciudadano_id = :citizenId and comitiva_id = :retinueId", nativeQuery = true)
+    AdministratorEntity findRoleByCitizenIdAndRetinueId(Long citizenId, Long retinueId);
 }

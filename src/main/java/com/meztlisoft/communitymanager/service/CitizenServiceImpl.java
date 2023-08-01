@@ -11,7 +11,6 @@ import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,17 +53,15 @@ public class CitizenServiceImpl implements CitizenService {
         Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize());
 
         List<Long> citizenIds = new ArrayList<>();
+        boolean isAdmin = true;
         if (!retinueId.equals(0L)) {
-            associationRepository.findAllByRetinueId(retinueId).forEach(asociated -> citizenIds.add(asociated.getCitizen().getId()));
+            isAdmin = false;
+            associationRepository.findAllByRetinueId(retinueId).forEach(associated -> citizenIds.add(associated.getCitizen().getId()));
         }
-        Page<CitizenEntity> citizens = new PageImpl<>(Collections.emptyList());
 
-        if (!citizenIds.isEmpty()) {
-            Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters, citizenIds);
-            log.info("Query citizens");
-            citizens = citizenRepository.findAll(specification, paging);
-            log.info("End query");
-        }
+        Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters, citizenIds, isAdmin);
+        Page<CitizenEntity> citizens = citizenRepository.findAll(specification, paging);
+
         List<CitizenDto> dtos = new ArrayList<>();
         for (CitizenEntity citizen : citizens) {
             dtos.add(objectMapper.convertValue(citizen, CitizenDto.class));
