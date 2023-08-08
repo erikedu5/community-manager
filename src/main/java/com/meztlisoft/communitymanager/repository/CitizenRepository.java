@@ -15,6 +15,6 @@ public interface CitizenRepository extends JpaRepository<CitizenEntity, Long>, J
 
     Optional<CitizenEntity> findByIdAndActive(Long citizenId, boolean active);
 
-    @Query(value = "SELECT * FROM ciudadanos WHERE id > 0 and activo = :active", nativeQuery = true)
+    @Query("FROM CitizenEntity c WHERE c.id > 0 and c.active = :active")
     Page<CitizenEntity> findAllActive(boolean active, Pageable paging);
 }

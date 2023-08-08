@@ -1,9 +1,8 @@
 package com.meztlisoft.communitymanager.service;
 
 import io.jsonwebtoken.Claims;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Map;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtService {
     String extractUserName(String token);

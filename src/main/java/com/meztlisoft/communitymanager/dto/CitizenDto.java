@@ -1,7 +1,6 @@
 package com.meztlisoft.communitymanager.dto;
 
 import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +16,5 @@ public class CitizenDto {
     private String curp;
     private String address;
     private LocalDate birthday;
+    private boolean isNative;
 }

@@ -1,9 +1,14 @@
 package com.meztlisoft.communitymanager.entity;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "ciudadanos", uniqueConstraints =  @UniqueConstraint(columnNames = { "curp" }))
@@ -28,6 +33,9 @@ public class CitizenEntity {
 
     @Column(name = "fecha_nacimiento")
     private LocalDate birthday;
+
+    @Column(name = "Nativo")
+    private boolean isNative;
 
     @Column(name = "activo")
     private Boolean active;
@@ -119,5 +127,13 @@ public class CitizenEntity {
 
     public void setUserEditor(Long userEditor) {
         this.userEditor = userEditor;
+    }
+
+    public boolean isNative() {
+        return isNative;
+    }
+
+    public void setNative(boolean aNative) {
+        isNative = aNative;
     }
 }

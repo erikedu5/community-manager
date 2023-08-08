@@ -15,8 +15,8 @@ INSERT INTO public."role"
 VALUES(4, true, 'Vocal');
 
 INSERT INTO public.ciudadanos
-(id,activo, curp, descripcion, direccion, fecha_actualizacion, fecha_creacion, fecha_nacimiento, nombre, usuario_editor)
-VALUES(0, true, 'AAAA000000HHHHHH00', NULL, NULL, NULL, now(), now(), 'Administrador de sistema', null);
+(id,activo, curp, nativo, descripcion, direccion, fecha_actualizacion, fecha_creacion, fecha_nacimiento, nombre, usuario_editor)
+VALUES(0, true, 'AAAA000000HHHHHH00', true,  NULL, NULL, NULL, now(), now(), 'Administrador de sistema', null);
 
 INSERT INTO public.users
 (id, active, user_name, "password", ciudadano_id)

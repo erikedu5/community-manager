@@ -4,7 +4,6 @@ import com.meztlisoft.communitymanager.entity.AdministratorEntity;
 import com.meztlisoft.communitymanager.entity.CitizenEntity;
 import com.meztlisoft.communitymanager.entity.RetinueEntity;
 import com.meztlisoft.communitymanager.entity.RoleEntity;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface AdministratorRepository extends JpaRepository<AdministratorEntity, Long>, JpaSpecificationExecutor<AdministratorEntity> {
 
 
-    @Query(value = "SELECT * FROM administradores WHERE id > 0 and activo = true", nativeQuery = true)
+    @Query("FROM AdministratorEntity a WHERE a.id > 0 and a.active = true")
     List<AdministratorEntity> findAllActive();
 
     boolean existsByRoleAndRetinue(RoleEntity role, RetinueEntity retinue);
@@ -25,6 +24,9 @@ public interface AdministratorRepository extends JpaRepository<AdministratorEnti
 
     List<AdministratorEntity> findByCitizenAndActive(CitizenEntity citizen, boolean active);
 
-    @Query(value = "SELECT * FROM administradores where ciudadano_id = :citizenId and comitiva_id = :retinueId", nativeQuery = true)
+    @Query("FROM AdministratorEntity a where a.citizen.id = :citizenId and a.retinue.id = :retinueId")
     AdministratorEntity findRoleByCitizenIdAndRetinueId(Long citizenId, Long retinueId);
+
+    @Query("FROM AdministratorEntity a WHERE a.citizen.id = :citizenId and a.active= :active")
+    AdministratorEntity findByCitizenIdAndActive(long citizenId, boolean active);
 }
