@@ -35,7 +35,7 @@ public class PaymentController {
     }
 
     @PostMapping("/volunteer")
-    private ResponseEntity<ActionStatusResponse> makeVolunter(@RequestBody AddPaymentDto addPaymentDto) {
+    private ResponseEntity<ActionStatusResponse> makeVolunteer(@RequestBody AddPaymentDto addPaymentDto) {
         return ResponseEntity.ok(paymentService.makeVolunteer(addPaymentDto));
     }
 }
