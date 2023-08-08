@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.CooperationDto;
 import com.meztlisoft.communitymanager.dto.filters.CooperationFilters;
-import com.meztlisoft.communitymanager.entity.CooperationEntity;
+import com.meztlisoft.communitymanager.entity.*;
 import com.meztlisoft.communitymanager.entity.specification.CooperationSpecification;
 import com.meztlisoft.communitymanager.repository.CooperationRepository;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
@@ -32,6 +32,7 @@ public class CooperationServiceImpl implements CooperationService {
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final RetinueRepository retinueRepository;
+    private final PaymentService paymentService;
 
     @Override
     public CooperationDto create(CooperationDto cooperationDto, String token) {
@@ -40,9 +41,14 @@ public class CooperationServiceImpl implements CooperationService {
         cooperationEntity.setRetinue(retinueRepository.findByIdAndActive(cooperationDto.getRetinueId(), true).orElseThrow());
         cooperationEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
         cooperationEntity.setCreationDate(LocalDateTime.now());
+        cooperationEntity.setNotNativeCooperation(cooperationDto.getNotNativeCooperation());
+        cooperationEntity.setBaseCooperation(cooperationDto.getBaseCooperation());
         cooperationEntity.setActive(true);
         CooperationEntity saved = cooperationRepository.save(cooperationEntity);
-        return objectMapper.convertValue(saved, CooperationDto.class);
+        CooperationDto savedDto = objectMapper.convertValue(saved, CooperationDto.class);
+        savedDto.setRetinueId(saved.getRetinue().getId());
+        paymentService.createInitialPaymentsAssociated(cooperationEntity);
+        return savedDto;
     }
 
     @Override
@@ -60,10 +66,13 @@ public class CooperationServiceImpl implements CooperationService {
     @Override
     public CooperationDto getById(long id) {
         CooperationEntity cooperation = cooperationRepository.findByIdAndActive(id, true).orElse(new CooperationEntity());
-        return objectMapper.convertValue(cooperation, CooperationDto.class);
+        CooperationDto cooperationDto = objectMapper.convertValue(cooperation, CooperationDto.class);
+        cooperationDto.setRetinueId(cooperation.getRetinue().getId());
+        return cooperationDto;
     }
 
     @Override
+    @Deprecated
     public ActionStatusResponse update(long id, CooperationDto cooperationDto, String token) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         Claims claims = jwtService.decodeToken(token);
@@ -107,6 +116,7 @@ public class CooperationServiceImpl implements CooperationService {
     }
 
     @Override
+    @Deprecated
     public ActionStatusResponse delete(long id, String token) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         Claims claims = jwtService.decodeToken(token);

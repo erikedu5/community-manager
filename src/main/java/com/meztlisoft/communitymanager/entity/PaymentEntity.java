@@ -35,17 +35,17 @@ public class PaymentEntity {
     @JsonIgnore
     private CooperationEntity cooperation;
 
-    @Column(name = "abono")
+    @Column(name = "acomulado_pago")
     private Long payment;
 
-    @Column(name = "fecha_abono")
+    @Column(name = "fecha_pago")
     private LocalDateTime paymentDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "administrador_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private AdministratorEntity administrator;
+    @Column(name = "voluntario")
+    private boolean volunteer;
+
+    @Column(name = "completo")
+    private boolean complete;
 
     public Long getId() {
         return id;
@@ -87,11 +87,19 @@ public class PaymentEntity {
         this.paymentDate = paymentDate;
     }
 
-    public AdministratorEntity getAdministrator() {
-        return administrator;
+    public boolean isVolunteer() {
+        return volunteer;
     }
 
-    public void setAdministrator(AdministratorEntity administrator) {
-        this.administrator = administrator;
+    public void setVolunteer(boolean volunteer) {
+        this.volunteer = volunteer;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 }

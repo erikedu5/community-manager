@@ -44,6 +44,9 @@ public class CooperationEntity {
     @Column(name = "costo_base_cooperacion")
     private Long baseCooperation;
 
+    @Column(name = "costo_foraneo_cooperación")
+    private Long notNativeCooperation;
+
     @Column(name = "fecha_creacion")
     private LocalDateTime creationDate;
 
@@ -131,5 +134,13 @@ public class CooperationEntity {
 
     public void setUserEditor(Long userEditor) {
         this.userEditor = userEditor;
+    }
+
+    public Long getNotNativeCooperation() {
+        return notNativeCooperation;
+    }
+
+    public void setNotNativeCooperation(Long notNativeCooperation) {
+        this.notNativeCooperation = notNativeCooperation;
     }
 }

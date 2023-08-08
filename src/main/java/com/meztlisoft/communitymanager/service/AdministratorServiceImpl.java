@@ -11,15 +11,14 @@ import com.meztlisoft.communitymanager.entity.specification.AdministratorSpecifi
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
+import com.meztlisoft.communitymanager.repository.RoleRepository;
+import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import com.meztlisoft.communitymanager.repository.RoleRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

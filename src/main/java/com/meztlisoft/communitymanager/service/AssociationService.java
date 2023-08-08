@@ -2,9 +2,8 @@ package com.meztlisoft.communitymanager.service;
 
 import com.meztlisoft.communitymanager.dto.*;
 import com.meztlisoft.communitymanager.dto.filters.AssociatedFilters;
-import org.springframework.data.domain.Page;
-
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface AssociationService {
     Page<AssociatedDto> getCitizenAssociated(long idRetinue, AssociatedFilters associatedFilters);
