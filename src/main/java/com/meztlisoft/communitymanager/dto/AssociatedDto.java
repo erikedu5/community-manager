@@ -12,5 +12,6 @@ public class AssociatedDto {
     private RoleEntity role;
     private Long citizenId;
     private String citizenName;
+    private Long associatedId;
 
 }
