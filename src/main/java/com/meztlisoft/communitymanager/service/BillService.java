@@ -7,9 +7,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.file.Path;
-
 public interface BillService {
     Page<BillDto> getAll(BillFilters billFilters, Long retinueId);
 

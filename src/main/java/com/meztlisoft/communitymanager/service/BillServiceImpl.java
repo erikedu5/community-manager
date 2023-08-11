@@ -9,8 +9,6 @@ import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.BillRepository;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import io.jsonwebtoken.Claims;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
@@ -22,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +31,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,6 +91,9 @@ public class BillServiceImpl implements BillService {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         try {
             BillEntity bill = billRepository.findById(id).orElseThrow();
+            if (StringUtils.isBlank(file.getOriginalFilename())) {
+                throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "El nombre del archivo está en blanco");
+            }
             String[] extension = file.getOriginalFilename().split("\\.");
             String evidenceName = "evidence-" + bill.getId() + "." + extension[extension.length - 1];
             Files.copy(file.getInputStream(), this.root.resolve(evidenceName));
