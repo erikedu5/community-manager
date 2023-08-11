@@ -28,6 +28,9 @@ public class BillEntity {
     @Column(name = "cantidad")
     private Long cost;
 
+    @Column(name = "evidencia")
+    private String evidencePack;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comitiva_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -89,5 +92,13 @@ public class BillEntity {
 
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getEvidencePack() {
+        return evidencePack;
+    }
+
+    public void setEvidencePack(String evidencePack) {
+        this.evidencePack = evidencePack;
     }
 }
