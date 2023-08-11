@@ -94,8 +94,11 @@ public class BillServiceImpl implements BillService {
             if (StringUtils.isBlank(file.getOriginalFilename())) {
                 throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "El nombre del archivo está en blanco");
             }
+            if (!Files.exists(root.resolve(bill.getRetinue().getName()))) {
+                Files.createDirectories(Paths.get(root + "/" + bill.getRetinue().getName()));
+            }
             String[] extension = file.getOriginalFilename().split("\\.");
-            String evidenceName = "evidence-" + bill.getId() + "." + extension[extension.length - 1];
+            String evidenceName = bill.getRetinue().getName() + "/evidence-" + bill.getId() + "." + extension[extension.length - 1];
             Files.copy(file.getInputStream(), this.root.resolve(evidenceName));
             bill.setEvidencePack(evidenceName);
             billRepository.save(bill);
@@ -123,6 +126,13 @@ public class BillServiceImpl implements BillService {
         bill.setCost(billDto.getCost());
         bill.setCreationDate(LocalDateTime.now());
         bill.setRetinue(retinueRepository.findByIdAndActive(retinueId, true).orElseThrow());
+        try {
+            if (!Files.exists(root.resolve(bill.getRetinue().getName()))) {
+                Files.createDirectories(Paths.get(bill.getRetinue().getName()));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Claims claims = jwtService.decodeToken(token);
         bill.setAdministrator(administratorRepository.findByCitizenIdAndActive(Long.parseLong(claims.get("ciudadano_id").toString()), true));
         BillEntity saved = billRepository.save(bill);
