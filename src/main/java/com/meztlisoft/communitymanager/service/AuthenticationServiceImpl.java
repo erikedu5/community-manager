@@ -7,6 +7,7 @@ import com.meztlisoft.communitymanager.dto.UserDto;
 import com.meztlisoft.communitymanager.entity.UserEntity;
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
+import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import com.meztlisoft.communitymanager.repository.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AdministratorRepository administratorRepository;
 
+    private final RetinueRepository retinueRepository;
+
     @Override
     public JwtAuthenticationResponse signin(SignInRequest request) {
         try {
@@ -45,8 +48,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
             Map<Long, String> retinues = new HashMap<>();
             if (citizen.getCitizen().getId().equals(0L)) {
-               administratorRepository.findAllActive()
-                   .forEach(admin -> retinues.put(admin.getRetinue().getId(), admin.getRetinue().getName()));
+                retinueRepository.findAllActive(true)
+                   .forEach(admin -> retinues.put(admin.getId(), admin.getName()));
             } else {
                 administratorRepository.findByCitizenAndActive(citizen.getCitizen(), true)
                     .forEach(admin -> retinues.put(admin.getRetinue().getId(), admin.getRetinue().getName()));
