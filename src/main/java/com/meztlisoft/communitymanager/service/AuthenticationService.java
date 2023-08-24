@@ -7,7 +7,7 @@ import com.meztlisoft.communitymanager.dto.UserDto;
 
 public interface AuthenticationService {
 
-    JwtAuthenticationResponse signin(SignInRequest request);
+    JwtAuthenticationResponse signIn(SignInRequest request);
 
     UserDto create(UserDto request);
 

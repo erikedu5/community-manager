@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 @Builder
 @NoArgsConstructor
@@ -42,7 +44,11 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<SimpleGrantedAuthority> authorities = new HashSet<>();
+        if (this.id.equals(0L)) {
+            authorities.add(new SimpleGrantedAuthority("admin"));
+        }
+        return authorities;
     }
 
     @Override

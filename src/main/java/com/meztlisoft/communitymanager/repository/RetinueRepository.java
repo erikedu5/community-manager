@@ -1,6 +1,8 @@
 package com.meztlisoft.communitymanager.repository;
 
 import com.meztlisoft.communitymanager.entity.RetinueEntity;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,6 @@ public interface RetinueRepository extends JpaRepository<RetinueEntity, Long>, J
     @Query("FROM RetinueEntity r where r.id > 0 and r.active = :active")
     Page<RetinueEntity> findAllActive(boolean active, Pageable page);
 
-    @Query("FROM RetinueEntity r where r.id > 0 and r.active = :active")
-    Page<RetinueEntity> findAllActive(boolean active);
+    @Query("FROM RetinueEntity r where r.id > 0 and r.active = true")
+    List<RetinueEntity> findAll();
 }

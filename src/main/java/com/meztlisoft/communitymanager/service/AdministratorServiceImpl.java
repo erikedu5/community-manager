@@ -1,12 +1,13 @@
 package com.meztlisoft.communitymanager.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.AdministratorDto;
+import com.meztlisoft.communitymanager.dto.AdministratorResponse;
 import com.meztlisoft.communitymanager.dto.filters.AdminFilters;
 import com.meztlisoft.communitymanager.entity.AdministratorEntity;
 import com.meztlisoft.communitymanager.entity.CitizenEntity;
 import com.meztlisoft.communitymanager.entity.RetinueEntity;
+import com.meztlisoft.communitymanager.entity.RoleEntity;
 import com.meztlisoft.communitymanager.entity.specification.AdministratorSpecification;
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
@@ -36,19 +37,20 @@ import org.springframework.web.client.HttpServerErrorException;
 public class AdministratorServiceImpl implements AdministratorService {
 
     private final AdministratorRepository administratorRepository;
-    private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final RetinueRepository retinueRepository;
     private final CitizenRepository citizenRepository;
     private final RoleRepository roleRepository;
 
     @Override
-    public AdministratorDto create(AdministratorDto request, String token) {
-
+    public AdministratorResponse create(AdministratorDto request, String token) {
         RetinueEntity retinue = retinueRepository.findByIdAndActive(request.getRetinueId(), true)
                 .orElseThrow();
 
-        if (administratorRepository.existsByRoleAndRetinue(request.getRole(), retinue)) {
+        RoleEntity role = roleRepository.findById(request.getRoleId())
+                .orElseThrow();
+
+        if (administratorRepository.existsByRoleAndRetinue(role, retinue)) {
             throw new HttpServerErrorException(HttpStatus.PRECONDITION_FAILED,
                     "Este rol ya esta ocupado por otro cuidadano");
         }
@@ -66,35 +68,42 @@ public class AdministratorServiceImpl implements AdministratorService {
         administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
         var administratorSaved = administratorRepository.save(administrator);
 
-        AdministratorDto administratorDto = new AdministratorDto();
-        administratorDto.setRole(administratorSaved.getRole());
-        administratorDto.setCitizen(citizen);
-        administratorDto.setRetinue(retinue);
-        return administratorDto;
+        AdministratorResponse administratorResponse = new AdministratorResponse();
+        administratorResponse.setRole(role);
+        administratorResponse.setCitizen(citizen);
+        administratorResponse.setRetinue(retinue);
+        administratorResponse.setAdministratorId(administratorSaved.getId());
+
+        return administratorResponse;
     }
 
     @Override
-    public Page<AdministratorDto> getAll(AdminFilters adminFilters) {
+    public Page<AdministratorResponse> getAll(AdminFilters adminFilters) {
         Pageable paging = PageRequest.of(adminFilters.getPage(), adminFilters.getSize());
         Specification<AdministratorEntity> specification = AdministratorSpecification.getFilteredAdministrator(adminFilters);
         Page<AdministratorEntity> administrators = administratorRepository.findAll(specification, paging);
-
-        List<AdministratorDto> dtos = new ArrayList<>();
+        List<AdministratorResponse> dtos = new ArrayList<>();
         administrators.stream().forEach(admin -> {
-            AdministratorDto administratorDto = new AdministratorDto();
-            administratorDto.setRole(admin.getRole());
-            administratorDto.setCitizen(admin.getCitizen());
-            administratorDto.setRetinue(admin.getRetinue());
-            dtos.add(administratorDto);
+            AdministratorResponse administratorResponse = new AdministratorResponse();
+            administratorResponse.setRole(admin.getRole());
+            administratorResponse.setCitizen(admin.getCitizen());
+            administratorResponse.setRetinue(admin.getRetinue());
+            administratorResponse.setAdministratorId(admin.getId());
+            dtos.add(administratorResponse);
         });
 
         return new PageImpl<>(dtos, administrators.getPageable(), administrators.getTotalElements());
     }
 
     @Override
-    public AdministratorDto getById(long id) {
+    public AdministratorResponse getById(long id) {
         AdministratorEntity administratorEntity = administratorRepository.findByIdAndActive(id, true).orElse(new AdministratorEntity());
-        return objectMapper.convertValue(administratorEntity, AdministratorDto.class);
+        AdministratorResponse administratorResponse = new AdministratorResponse();
+        administratorResponse.setRole(administratorEntity.getRole());
+        administratorResponse.setCitizen(administratorEntity.getCitizen());
+        administratorResponse.setRetinue(administratorEntity.getRetinue());
+        administratorResponse.setAdministratorId(administratorEntity.getId());
+        return administratorResponse;
     }
 
     @Override
@@ -104,9 +113,9 @@ public class AdministratorServiceImpl implements AdministratorService {
         try {
             AdministratorEntity administrator = administratorRepository.findByIdAndActive(id, true).orElseThrow();
 
-
-            if (Objects.nonNull(administratorDto.getRole())) {
-                administrator.setRole(administratorDto.getRole());
+            if (Objects.nonNull(administratorDto.getRoleId())) {
+                RoleEntity role = roleRepository.findById(administratorDto.getRoleId()).orElseThrow();
+                administrator.setRole(role);
             }
 
             administrator.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));

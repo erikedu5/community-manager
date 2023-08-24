@@ -40,21 +40,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RetinueRepository retinueRepository;
 
     @Override
-    public JwtAuthenticationResponse signin(SignInRequest request) {
+    public JwtAuthenticationResponse signIn(SignInRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-            var citizen = userRepository.findByUserName(request.getUserName())
+            UserEntity citizen = userRepository.findByUserName(request.getUserName())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
             Map<Long, String> retinues = new HashMap<>();
             if (citizen.getCitizen().getId().equals(0L)) {
-                retinueRepository.findAllActive(true)
+                retinueRepository.findAll()
                    .forEach(admin -> retinues.put(admin.getId(), admin.getName()));
             } else {
                 administratorRepository.findByCitizenAndActive(citizen.getCitizen(), true)
                     .forEach(admin -> retinues.put(admin.getRetinue().getId(), admin.getRetinue().getName()));
             }
-            var jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId(), retinues);
+            String jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId(), retinues);
             return JwtAuthenticationResponse.builder().token(jwt).build();
         } catch (Exception e) {
             log.info(e.getMessage());
