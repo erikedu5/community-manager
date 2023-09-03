@@ -29,7 +29,7 @@ public class CooperationSpecification {
             }
 
             if (Objects.nonNull(params.getRetinueId())) {
-                predicates.add(criteriaBuilder.equal(root.get("retinue"), params.getRetinueId()));
+                predicates.add(criteriaBuilder.equal(root.get("retinue").get("id"), params.getRetinueId()));
             }
 
             predicates.add(criteriaBuilder.equal(root.get("active"), true));

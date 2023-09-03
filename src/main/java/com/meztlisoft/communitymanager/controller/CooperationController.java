@@ -28,7 +28,9 @@ public class CooperationController {
     }
 
     @PostMapping("/all")
-    public ResponseEntity<Page<CooperationDto>> getAll(@RequestBody CooperationFilters cooperationFilters) {
+    public ResponseEntity<Page<CooperationDto>> getAll(@RequestBody CooperationFilters cooperationFilters,
+                                                       @RequestHeader(value = "retinueId") final Long retinueId) {
+        cooperationFilters.setRetinueId(retinueId);
         return ResponseEntity.ok(cooperationService.getAll(cooperationFilters));
     }
 
