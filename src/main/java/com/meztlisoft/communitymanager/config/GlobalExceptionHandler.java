@@ -18,6 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 
@@ -73,6 +74,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
         error.setStatusCode(HttpStatus.UNAUTHORIZED.value());
         error.setTimestamp(LocalDateTime.now());
         error.setMessage(ex.getMessage());
+        return ResponseEntity.ok(error);
+    }
+
+    @ExceptionHandler(value = { ConstraintViolationException.class })
+    protected ResponseEntity<ErrorMessage> handleSqlException(ConstraintViolationException ex, WebRequest request) {
+        ErrorMessage error = new ErrorMessage();
+        error.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        error.setTimestamp(LocalDateTime.now());
+        if (ex.getMessage().contains("duplicate key")) {
+            error.setMessage("Llave duplicada");
+        } else {
+            error.setMessage(ex.getMessage());
+        }
         return ResponseEntity.ok(error);
     }
 }
