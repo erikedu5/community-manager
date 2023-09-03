@@ -1,15 +1,16 @@
 package com.meztlisoft.communitymanager.service;
 
-import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
-import com.meztlisoft.communitymanager.dto.JwtAuthenticationResponse;
-import com.meztlisoft.communitymanager.dto.SignInRequest;
-import com.meztlisoft.communitymanager.dto.UserDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meztlisoft.communitymanager.dto.*;
 import com.meztlisoft.communitymanager.entity.UserEntity;
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import com.meztlisoft.communitymanager.repository.UserRepository;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -39,6 +40,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final RetinueRepository retinueRepository;
 
+    private final ObjectMapper objectMapper;
+
     @Override
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         try {
@@ -46,13 +49,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
             UserEntity citizen = userRepository.findByUserName(request.getUserName())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-            Map<Long, String> retinues = new HashMap<>();
+            List<RetinueDto> retinues = new ArrayList<>();
             if (citizen.getCitizen().getId().equals(0L)) {
                 retinueRepository.findAll()
-                   .forEach(admin -> retinues.put(admin.getId(), admin.getName()));
+                   .forEach(ret -> retinues.add(objectMapper.convertValue(ret, RetinueDto.class)));
             } else {
                 administratorRepository.findByCitizenAndActive(citizen.getCitizen(), true)
-                    .forEach(admin -> retinues.put(admin.getRetinue().getId(), admin.getRetinue().getName()));
+                        .forEach(ret -> retinues.add(objectMapper.convertValue(ret.getRetinue(), RetinueDto.class)));
             }
             String jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId(), retinues);
             return JwtAuthenticationResponse.builder().token(jwt).build();

@@ -1,5 +1,6 @@
 package com.meztlisoft.communitymanager.service;
 
+import com.meztlisoft.communitymanager.dto.RetinueDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(UserDetails userDetails, Long id, Map<Long, String> retinues) {
+    public String generateToken(UserDetails userDetails, Long id, List<RetinueDto> retinues) {
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("ciudadano_id", id);
         claims.put("rol", userDetails.getAuthorities());

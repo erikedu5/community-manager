@@ -58,7 +58,12 @@ public class CooperationServiceImpl implements CooperationService {
         Page<CooperationEntity> cooperationEntities = cooperationRepository.findAll(specification, paging);
 
         List<CooperationDto> dtos = new ArrayList<>();
-        cooperationEntities.stream().forEach(cooperation -> dtos.add(objectMapper.convertValue(cooperation, CooperationDto.class)));
+        cooperationEntities.stream().forEach(cooperation -> {
+            CooperationDto dto = objectMapper.convertValue(cooperation, CooperationDto.class);
+            dto.setRetinueName(cooperation.getRetinue().getName());
+            dto.setRetinueId(cooperation.getRetinue().getId());
+            dtos.add(dto);
+        });
 
         return new PageImpl<>(dtos, cooperationEntities.getPageable(), cooperationEntities.getTotalElements());
     }
