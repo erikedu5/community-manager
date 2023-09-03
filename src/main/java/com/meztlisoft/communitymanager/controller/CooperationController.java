@@ -23,15 +23,15 @@ public class CooperationController {
 
     @PostMapping
     public ResponseEntity<CooperationDto> create(@RequestBody CooperationDto cooperationDto,
-                                                     @RequestHeader(value = "Authorization") final String token) {
-        return ResponseEntity.ok(cooperationService.create(cooperationDto, token));
+                                                 @RequestHeader(value = "retinueId") final Long retinueId,
+                                                 @RequestHeader(value = "Authorization") final String token) {
+        return ResponseEntity.ok(cooperationService.create(cooperationDto, token, retinueId));
     }
 
     @PostMapping("/all")
     public ResponseEntity<Page<CooperationDto>> getAll(@RequestBody CooperationFilters cooperationFilters,
                                                        @RequestHeader(value = "retinueId") final Long retinueId) {
-        cooperationFilters.setRetinueId(retinueId);
-        return ResponseEntity.ok(cooperationService.getAll(cooperationFilters));
+        return ResponseEntity.ok(cooperationService.getAll(cooperationFilters, retinueId));
     }
 
     @GetMapping("/{id}")

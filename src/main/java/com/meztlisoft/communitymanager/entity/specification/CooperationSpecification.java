@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class CooperationSpecification {
 
-    public static Specification<CooperationEntity> getCooperationFilters(CooperationFilters params) {
+    public static Specification<CooperationEntity> getCooperationFilters(CooperationFilters params, Long retinueId) {
         return (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -28,8 +28,8 @@ public class CooperationSpecification {
                 predicates.add(criteriaBuilder.equal(root.get("startDate"), params.getStartDate()));
             }
 
-            if (Objects.nonNull(params.getRetinueId())) {
-                predicates.add(criteriaBuilder.equal(root.get("retinue").get("id"), params.getRetinueId()));
+            if (Objects.nonNull(retinueId)) {
+                predicates.add(criteriaBuilder.equal(root.get("retinue").get("id"), retinueId));
             }
 
             predicates.add(criteriaBuilder.equal(root.get("active"), true));

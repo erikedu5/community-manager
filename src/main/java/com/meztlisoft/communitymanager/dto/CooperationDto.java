@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class CooperationDto {
-    private Long retinueId;
+
     private String retinueName;
     private Long id;
     private String concept;
