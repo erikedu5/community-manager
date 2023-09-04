@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/cooperation")
 @RequiredArgsConstructor
@@ -32,6 +34,12 @@ public class CooperationController {
     public ResponseEntity<Page<CooperationDto>> getAll(@RequestBody CooperationFilters cooperationFilters,
                                                        @RequestHeader(value = "retinueId") final Long retinueId) {
         return ResponseEntity.ok(cooperationService.getAll(cooperationFilters, retinueId));
+    }
+
+    @GetMapping("/catalog")
+    public ResponseEntity<List<CooperationDto>> getCatalog(
+            @RequestHeader(value = "retinueId") final Long retinueId) {
+        return ResponseEntity.ok(cooperationService.getCatalog(retinueId));
     }
 
     @GetMapping("/{id}")

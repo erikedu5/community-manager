@@ -68,4 +68,12 @@ public class CooperationServiceImpl implements CooperationService {
         cooperationDto.setRetinueName(cooperation.getRetinue().getName());
         return cooperationDto;
     }
+
+    @Override
+    public List<CooperationDto> getCatalog(Long retinueId) {
+        List<CooperationEntity> cooperations = cooperationRepository.findByRetinueId(retinueId);
+        List<CooperationDto> dtos = new ArrayList<>();
+        cooperations.forEach(cooperation -> dtos.add(objectMapper.convertValue(cooperation, CooperationDto.class)));
+        return dtos;
+    }
 }
