@@ -7,6 +7,7 @@ public class PaymentDto {
 
     private String citizenName;
     private Long citizenId;
+    private String citizenDescription;
     private Long associatedId;
     private Long payment;
     private boolean complete;

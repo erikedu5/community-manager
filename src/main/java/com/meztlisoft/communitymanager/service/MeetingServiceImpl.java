@@ -17,6 +17,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,21 +31,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public MeetingResponse findById(long id) {
         MeetingEntity meeting = meetingRepository.findById(id).orElseThrow();
-        MeetingResponse response = new MeetingResponse();
-        response.setConcept(meeting.getDescription());
-        response.setMeetingDate(meeting.getMeetingDate());
-        response.setId(meeting.getId());
-        List<MeetingAttendanceDto> dto = new ArrayList<>();
-        List<AttendanceMeetingEntity> attendancesMeeting = attendanceMeetingRepository.findByMeetingId(id);
-        attendancesMeeting.forEach(attendanceMeetingEntity -> {
-            MeetingAttendanceDto attendanceMeeting = new MeetingAttendanceDto();
-            attendanceMeeting.setAssociatedId(attendanceMeetingEntity.getAssociated().getId());
-            attendanceMeeting.setCitizenName(attendanceMeetingEntity.getAssociated().getCitizen().getName());
-            attendanceMeeting.setCheck(attendanceMeetingEntity.isAttendance());
-            dto.add(attendanceMeeting);
-        });
-        response.setAttendance(dto);
-        return response;
+        return convertMeetingToMeetingResponse(meeting);
     }
 
     @Override
@@ -84,6 +71,34 @@ public class MeetingServiceImpl implements MeetingService {
             errors.put(HttpStatus.BAD_GATEWAY, exception.getMessage());
             response.setErrors(errors);
         }
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public List<MeetingResponse> getAll(Long retinueId) {
+        List<MeetingEntity> meets = meetingRepository.findByRetinueId(retinueId);
+        List<MeetingResponse> dto = new ArrayList<>();
+        meets.forEach(meeting -> dto.add(convertMeetingToMeetingResponse(meeting)));
+        return dto;
+    }
+
+    private MeetingResponse convertMeetingToMeetingResponse(MeetingEntity meeting) {
+        MeetingResponse response = new MeetingResponse();
+        response.setConcept(meeting.getDescription());
+        response.setMeetingDate(meeting.getMeetingDate());
+        response.setId(meeting.getId());
+        List<MeetingAttendanceDto> attendanceDtos = new ArrayList<>();
+        List<AttendanceMeetingEntity> attendancesMeeting = attendanceMeetingRepository.findByMeetingId(meeting.getId());
+        attendancesMeeting.forEach(attendanceMeetingEntity -> {
+            MeetingAttendanceDto attendanceMeeting = new MeetingAttendanceDto();
+            attendanceMeeting.setAssociatedId(attendanceMeetingEntity.getAssociated().getId());
+            attendanceMeeting.setCitizenName(attendanceMeetingEntity.getAssociated().getCitizen().getName());
+            attendanceMeeting.setCitizenId(attendanceMeeting.getCitizenId());
+            attendanceMeeting.setCheck(attendanceMeetingEntity.isAttendance());
+            attendanceDtos.add(attendanceMeeting);
+        });
+        response.setAttendance(attendanceDtos);
         return response;
     }
 }

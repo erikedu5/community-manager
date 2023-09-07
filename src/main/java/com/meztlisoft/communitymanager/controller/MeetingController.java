@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/meeting")
 @RequiredArgsConstructor
@@ -24,21 +26,26 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     @GetMapping("/{id}")
-    private ResponseEntity<MeetingResponse> getAll(@PathVariable(name = "id") final long id) {
+    public ResponseEntity<MeetingResponse> getById(@PathVariable(name = "id") final long id) {
         return ResponseEntity.ok(meetingService.findById(id));
     }
 
     @PostMapping
-    private ResponseEntity<ActionStatusResponse> save(@RequestBody MeetingDto meeting,
+    public ResponseEntity<ActionStatusResponse> save(@RequestBody MeetingDto meeting,
                                                       @RequestHeader(name = "Authorization") String token,
                                                       @RequestHeader(name = "retinueId") Long retinueId) {
         return ResponseEntity.ok(meetingService.save(meeting, token, retinueId));
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<ActionStatusResponse> saveAttendance(@PathVariable(name = "id") final Long id,
+    public ResponseEntity<ActionStatusResponse> saveAttendance(@PathVariable(name = "id") final Long id,
                                                                 @RequestBody MeetingAttendanceDto meetingAttendanceDto) {
         return ResponseEntity.ok(meetingService.check(id, meetingAttendanceDto));
+    }
+
+    @PostMapping("/all")
+    public ResponseEntity<List<MeetingResponse>> getAll(@RequestHeader(name = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(meetingService.getAll(retinueId));
     }
 
 }
