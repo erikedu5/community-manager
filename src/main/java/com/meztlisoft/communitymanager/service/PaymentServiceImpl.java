@@ -54,6 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
             dto.setCitizenName(payment.getAssociated().getCitizen().getName());
             dto.setCitizenId(payment.getAssociated().getCitizen().getId());
             dto.setCitizenDescription(payment.getAssociated().getCitizen().getDescription());
+            dto.setBenefit(payment.getAssociated().getBenefit());
             dto.setAssociatedId(payment.getAssociated().getId());
             dto.setPayment(payment.getPayment());
             dto.setVolunteer(payment.isVolunteer());
@@ -100,11 +101,13 @@ public class PaymentServiceImpl implements PaymentService {
             long citizenId = Long.parseLong(claims.get("ciudadano_id").toString());
             AdministratorEntity admin = administratorRepository.findByCitizenIdAndActive(citizenId, true);
             CooperationEntity cooperation = cooperationRepository.findById(addPaymentDto.getCooperationId()).orElseThrow();
+            AssociatedEntity association = associationRepository.findById(addPaymentDto.getAssociatedId()).orElseThrow();
 
             Long cooperationBase = cooperation.getBaseCooperation();
             if (!admin.getCitizen().isNative()) {
                 cooperationBase = cooperation.getNotNativeCooperation();
             }
+            cooperationBase = cooperationBase * association.getBenefit();
 
             PaymentEntity payment = paymentRepository
                     .findByCooperationIdAndAssociatedId(addPaymentDto.getCooperationId(),

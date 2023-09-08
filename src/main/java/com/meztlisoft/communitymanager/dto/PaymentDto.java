@@ -12,5 +12,6 @@ public class PaymentDto {
     private Long payment;
     private boolean complete;
     private boolean volunteer;
+    private Long benefit;
 
 }
