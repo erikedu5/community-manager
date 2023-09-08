@@ -5,6 +5,8 @@ import com.meztlisoft.communitymanager.dto.RetinueDto;
 import com.meztlisoft.communitymanager.dto.filters.RetinueFilters;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface RetinueService {
 
     RetinueDto create(RetinueDto retinueDto, String token);
@@ -16,4 +18,6 @@ public interface RetinueService {
     ActionStatusResponse delete(long id, String token);
 
     RetinueDto getById(long id);
+
+    List<RetinueDto> getCatalog();
 }

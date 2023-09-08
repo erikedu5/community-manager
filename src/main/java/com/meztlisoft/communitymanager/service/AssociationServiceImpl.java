@@ -158,6 +158,7 @@ public class AssociationServiceImpl implements  AssociationService {
         associatedEntity.setCreationDate(LocalDateTime.now());
         associatedEntity.setCitizen(citizen);
         associatedEntity.setRetinue(retinue);
+        associatedEntity.setBenefit(associatedEntity.getBenefit());
         associatedEntity.setUserEditor(userEditor);
         associatedEntities.add(associatedEntity);
         if (Objects.nonNull(association.getRoleId())) {

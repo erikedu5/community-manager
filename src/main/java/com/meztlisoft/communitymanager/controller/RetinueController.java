@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/retinue")
 @RequiredArgsConstructor
@@ -36,6 +38,11 @@ public class RetinueController {
     @PostMapping("/all")
     public ResponseEntity<Page<RetinueDto>> getAll(@RequestBody RetinueFilters retinueFilters) {
         return ResponseEntity.ok(retinueService.getAll(retinueFilters));
+    }
+
+    @GetMapping("/catalog")
+    public ResponseEntity<List<RetinueDto>> getCatalog() {
+        return ResponseEntity.ok(retinueService.getCatalog());
     }
 
     @GetMapping("/{id}")

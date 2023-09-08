@@ -15,7 +15,7 @@ public class RetinueSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (StringUtils.isNoneBlank(params.getName())) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("name")), params.getName().toUpperCase()));
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("name")), "%" + params.getName().toUpperCase() + "%"));
             }
 
             predicates.add(criteriaBuilder.gt(root.get("id"), 0));

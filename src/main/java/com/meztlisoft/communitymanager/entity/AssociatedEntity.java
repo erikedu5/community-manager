@@ -27,6 +27,9 @@ public class AssociatedEntity {
     @JsonIgnore
     private RetinueEntity retinue;
 
+    @Column(name="beneficio")
+    private Long benefit;
+
     @Column(name = "activo")
     private Boolean active;
 
@@ -94,5 +97,13 @@ public class AssociatedEntity {
 
     public void setUserEditor(Long userEditor) {
         this.userEditor = userEditor;
+    }
+
+    public Long getBenefit() {
+        return benefit;
+    }
+
+    public void setBenefit(Long benefit) {
+        this.benefit = benefit;
     }
 }

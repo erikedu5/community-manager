@@ -8,5 +8,6 @@ public class AssociationsDto {
     private Long citizenId;
     private Long roleId;
     private Long retinueId;
+    private Long benefit;
 
 }

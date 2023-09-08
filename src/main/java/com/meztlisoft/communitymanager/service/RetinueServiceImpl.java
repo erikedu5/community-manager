@@ -65,6 +65,16 @@ public class RetinueServiceImpl implements RetinueService {
     }
 
     @Override
+    public List<RetinueDto> getCatalog() {
+        List<RetinueEntity> retinues = retinueRepository.findAll();
+        List<RetinueDto> dtos = new ArrayList<>();
+        for (RetinueEntity retinue : retinues) {
+            dtos.add(objectMapper.convertValue(retinue, RetinueDto.class));
+        }
+        return dtos;
+    }
+
+    @Override
     public ActionStatusResponse update(long id, RetinueDto retinueDto, String token) {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         Claims claims = jwtService.decodeToken(token);
