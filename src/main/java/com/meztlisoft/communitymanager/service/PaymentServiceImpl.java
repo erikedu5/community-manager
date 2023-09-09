@@ -108,7 +108,10 @@ public class PaymentServiceImpl implements PaymentService {
             if (!admin.getCitizen().isNative()) {
                 cooperationBase = cooperation.getNotNativeCooperation();
             }
-            cooperationBase = cooperationBase * association.getBenefit();
+
+            if (cooperation.isByUnity()) {
+                cooperationBase = cooperationBase * association.getBenefit();
+            }
 
             PaymentEntity payment = paymentRepository
                     .findByCooperationIdAndAssociatedId(addPaymentDto.getCooperationId(),
