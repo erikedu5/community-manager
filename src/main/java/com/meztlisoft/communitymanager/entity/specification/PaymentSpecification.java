@@ -27,6 +27,16 @@ public class PaymentSpecification {
                 predicates.add(criteriaBuilder.equal(root.get("volunteer"), params.getVolunteer()));
             }
 
+            if (Objects.nonNull(params.getCitizenName())) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("associated").get("citizen").get("name")),
+                        "%" + params.getCitizenName().toUpperCase() + "%"));
+            }
+
+            if (Objects.nonNull(params.getCitizenDescription())) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("associated").get("citizen").get("description")),
+                        "%" + params.getCitizenDescription().toUpperCase() + "%"));
+            }
+
             predicates.add(criteriaBuilder.equal(root.get("cooperation").get("id"), cooperationId));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

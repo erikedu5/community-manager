@@ -13,5 +13,6 @@ public class PaymentDto {
     private boolean complete;
     private boolean volunteer;
     private Long benefit;
+    private boolean isNative;
 
 }

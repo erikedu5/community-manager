@@ -53,6 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
             PaymentDto dto = new PaymentDto();
             dto.setCitizenName(payment.getAssociated().getCitizen().getName());
             dto.setCitizenId(payment.getAssociated().getCitizen().getId());
+            dto.setNative(payment.getAssociated().getCitizen().isNative());
             dto.setCitizenDescription(payment.getAssociated().getCitizen().getDescription());
             dto.setBenefit(payment.getAssociated().getBenefit());
             dto.setAssociatedId(payment.getAssociated().getId());
