@@ -1,5 +1,9 @@
 INSERT INTO public."role"
 (id, activo, nombre)
+VALUES(0, true, 'Socio');
+
+INSERT INTO public."role"
+(id, activo, nombre)
 VALUES(1, true, 'Presidente');
 
 INSERT INTO public."role"

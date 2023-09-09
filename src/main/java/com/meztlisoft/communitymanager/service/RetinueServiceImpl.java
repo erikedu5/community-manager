@@ -55,6 +55,7 @@ public class RetinueServiceImpl implements RetinueService {
         for (RetinueEntity retinue : retinues) {
             RetinueDto retinueDto = objectMapper.convertValue(retinue, RetinueDto.class);
             retinueDto.setUnitBenefit(retinue.getUnitBenefit().getId());
+            retinueDto.setUnitBenefitName(retinue.getUnitBenefit().getName());
             dtos.add(retinueDto);
         }
         return new PageImpl<>(dtos, retinues.getPageable(), retinues.getTotalElements());
@@ -66,6 +67,7 @@ public class RetinueServiceImpl implements RetinueService {
         RetinueEntity retinueEntity = retinueRepository.findByIdAndActive(id, true).orElse(new RetinueEntity());
         RetinueDto retinueDto = objectMapper.convertValue(retinueEntity, RetinueDto.class);
         retinueDto.setUnitBenefit(retinueEntity.getUnitBenefit().getId());
+        retinueDto.setUnitBenefitName(retinueEntity.getUnitBenefit().getName());
         return retinueDto;
     }
 
