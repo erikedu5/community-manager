@@ -16,7 +16,7 @@ public class UnitBenefitController {
 
     private final UnitBenefitService unitBenefitService;
 
-    @PostMapping("/all")
+    @GetMapping("/all")
     public ResponseEntity<List<UnitBenefitEntity>> getAll() {
         return ResponseEntity.ok(unitBenefitService.getAll());
     }
