@@ -7,12 +7,11 @@ import com.meztlisoft.communitymanager.dto.filters.RetinueFilters;
 import com.meztlisoft.communitymanager.entity.RetinueEntity;
 import com.meztlisoft.communitymanager.entity.specification.RetinueSpecification;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
+import com.meztlisoft.communitymanager.repository.UnitBenefitRepository;
 import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class RetinueServiceImpl implements RetinueService {
 
     private final RetinueRepository retinueRepository;
+    private final UnitBenefitRepository unitBenefitRepository;
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
 
@@ -36,6 +36,7 @@ public class RetinueServiceImpl implements RetinueService {
 
         Claims claims = jwtService.decodeToken(token);
         RetinueEntity retinueEntity = objectMapper.convertValue(retinueDto, RetinueEntity.class);
+        retinueEntity.setUnitBenefit(unitBenefitRepository.findById(retinueDto.getUnitBenefit()).orElseThrow());
         retinueEntity.setActive(true);
         retinueEntity.setCreationDate(LocalDateTime.now());
         retinueEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
@@ -52,7 +53,9 @@ public class RetinueServiceImpl implements RetinueService {
 
         List<RetinueDto> dtos = new ArrayList<>();
         for (RetinueEntity retinue : retinues) {
-            dtos.add(objectMapper.convertValue(retinue, RetinueDto.class));
+            RetinueDto retinueDto = objectMapper.convertValue(retinue, RetinueDto.class);
+            retinueDto.setUnitBenefit(retinue.getUnitBenefit().getId());
+            dtos.add(retinueDto);
         }
         return new PageImpl<>(dtos, retinues.getPageable(), retinues.getTotalElements());
 
@@ -61,7 +64,9 @@ public class RetinueServiceImpl implements RetinueService {
     @Override
     public RetinueDto getById(long id) {
         RetinueEntity retinueEntity = retinueRepository.findByIdAndActive(id, true).orElse(new RetinueEntity());
-        return objectMapper.convertValue(retinueEntity, RetinueDto.class);
+        RetinueDto retinueDto = objectMapper.convertValue(retinueEntity, RetinueDto.class);
+        retinueDto.setUnitBenefit(retinueEntity.getUnitBenefit().getId());
+        return retinueDto;
     }
 
     @Override
@@ -82,6 +87,9 @@ public class RetinueServiceImpl implements RetinueService {
             RetinueEntity retinue = retinueRepository.findByIdAndActive(id, true).orElseThrow();
             if (StringUtils.isNotBlank(retinueDto.getName())) {
                 retinue.setName(retinueDto.getName());
+            }
+            if(Objects.nonNull(retinueDto.getUnitBenefit())) {
+                retinue.setUnitBenefit(unitBenefitRepository.findById(retinueDto.getUnitBenefit()).orElseThrow());
             }
             retinue.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
             retinue.setUpdateDate(LocalDateTime.now());

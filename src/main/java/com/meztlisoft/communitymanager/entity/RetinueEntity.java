@@ -1,11 +1,10 @@
 package com.meztlisoft.communitymanager.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,6 +20,12 @@ public class RetinueEntity {
 
     @Column(name = "activo")
     private Boolean active;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "unidad_beneficio_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private UnitBenefitEntity unitBenefit;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime creationDate;
@@ -45,6 +50,14 @@ public class RetinueEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public UnitBenefitEntity getUnitBenefit() {
+        return unitBenefit;
+    }
+
+    public void setUnitBenefit(UnitBenefitEntity unitBenefit) {
+        this.unitBenefit = unitBenefit;
     }
 
     public Boolean getActive() {
