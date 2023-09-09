@@ -36,6 +36,7 @@ public class CooperationServiceImpl implements CooperationService {
         cooperationEntity.setRetinue(retinueRepository.findByIdAndActive(retinueId, true).orElseThrow());
         cooperationEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
         cooperationEntity.setCreationDate(LocalDateTime.now());
+        cooperationEntity.setByUnity(cooperationEntity.isByUnity());
         cooperationEntity.setNotNativeCooperation(cooperationDto.getNotNativeCooperation());
         cooperationEntity.setBaseCooperation(cooperationDto.getBaseCooperation());
         cooperationEntity.setActive(true);

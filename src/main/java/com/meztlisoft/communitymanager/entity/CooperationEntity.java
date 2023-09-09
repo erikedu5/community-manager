@@ -40,6 +40,9 @@ public class CooperationEntity {
     @Column(name = "costo_foraneo_cooperación")
     private Long notNativeCooperation;
 
+    @Column(name = "cooperacion_por_beneficio")
+    private boolean byUnity;
+
     @Column(name = "fecha_creacion")
     private LocalDateTime creationDate;
 
@@ -103,6 +106,14 @@ public class CooperationEntity {
 
     public void setBaseCooperation(Long baseCooperation) {
         this.baseCooperation = baseCooperation;
+    }
+
+    public boolean isByUnity() {
+        return byUnity;
+    }
+
+    public void setByUnity(boolean byUnity) {
+        this.byUnity = byUnity;
     }
 
     public LocalDateTime getCreationDate() {

@@ -13,4 +13,5 @@ public class CooperationDto {
     private LocalDate startDate;
     private Long baseCooperation;
     private Long notNativeCooperation;
+    private boolean byUnity;
 }
