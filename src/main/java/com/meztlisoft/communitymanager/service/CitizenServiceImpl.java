@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.CitizenDto;
 import com.meztlisoft.communitymanager.dto.filters.CitizenFilters;
+import com.meztlisoft.communitymanager.entity.AssociatedEntity;
 import com.meztlisoft.communitymanager.entity.CitizenEntity;
+import com.meztlisoft.communitymanager.entity.specification.AssociationSpecification;
 import com.meztlisoft.communitymanager.entity.specification.CitizenSpecification;
 import com.meztlisoft.communitymanager.repository.AssociationRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
@@ -51,22 +53,29 @@ public class CitizenServiceImpl implements CitizenService {
     @Override
     public Page<CitizenDto> getAll(CitizenFilters citizenFilters, Long retinueId) {
         Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize());
-
-        List<Long> citizenIds = new ArrayList<>();
-        boolean isAdmin = true;
-        if (!retinueId.equals(0L)) {
-            isAdmin = false;
-            associationRepository.findAllByRetinueId(retinueId).forEach(associated -> citizenIds.add(associated.getCitizen().getId()));
-        }
-
-        Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters, citizenIds, isAdmin);
-        Page<CitizenEntity> citizens = citizenRepository.findAll(specification, paging);
-
         List<CitizenDto> dtos = new ArrayList<>();
-        for (CitizenEntity citizen : citizens) {
-            dtos.add(objectMapper.convertValue(citizen, CitizenDto.class));
+        Page<CitizenEntity> citizens;
+        Page<AssociatedEntity> associated;
+        Pageable pageable;
+        long totalElements;
+        if (!retinueId.equals(0L)) {
+            Specification<AssociatedEntity> specification = AssociationSpecification.getFilteredCitizen(citizenFilters, retinueId);
+            associated = associationRepository.findAll(specification, paging);
+            pageable = associated.getPageable();
+            totalElements = associated.getTotalElements();
+            for (AssociatedEntity association: associated) {
+                dtos.add(objectMapper.convertValue(association.getCitizen(), CitizenDto.class));
+            }
+        } else {
+            Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters);
+            citizens = citizenRepository.findAll(specification, paging);
+            pageable = citizens.getPageable();
+            totalElements = citizens.getTotalElements();
+            for (CitizenEntity citizen : citizens) {
+                dtos.add(objectMapper.convertValue(citizen, CitizenDto.class));
+            }
         }
-        return new PageImpl<>(dtos, citizens.getPageable(), citizens.getTotalElements());
+        return new PageImpl<>(dtos, pageable, totalElements);
     }
 
     @Override
