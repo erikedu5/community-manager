@@ -15,11 +15,8 @@ import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import com.meztlisoft.communitymanager.repository.RoleRepository;
 import io.jsonwebtoken.Claims;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -144,7 +141,9 @@ public class AssociationServiceImpl implements  AssociationService {
         AssociatedDto dto = new AssociatedDto();
         dto.setRetinueId(retinue.getId());
         dto.setRetinueName(retinue.getName());
-        dto.setMember(associationRepository.existByRetinueAndCitizen(retinue.getId(), citizen.getId()));
+        Optional<AssociatedEntity> associated = associationRepository.findByRetinueIdAndCitizenId(retinue.getId(), citizen.getId());
+        dto.setMember(associated.isPresent());
+        associated.ifPresent(associatedEntity -> dto.setBenefit(associatedEntity.getBenefit()));
         AdministratorEntity administrator = administratorRepository.findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId());
         dto.setRole(Objects.nonNull(administrator) ?administrator.getRole(): null);
         dto.setCitizenName(citizen.getName());
