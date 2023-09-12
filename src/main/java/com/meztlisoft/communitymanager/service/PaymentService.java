@@ -15,4 +15,6 @@ public interface PaymentService {
     ActionStatusResponse addPayment(AddPaymentDto addPaymentDto, String token);
 
     ActionStatusResponse makeVolunteer(AddPaymentDto addPaymentDto);
+
+    Long getSummaryByCooperationId(long id);
 }

@@ -2,6 +2,7 @@ package com.meztlisoft.communitymanager.controller;
 
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.BillDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.BillFilters;
 import com.meztlisoft.communitymanager.service.BillService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,11 @@ public class BillController {
         Resource file = billService.downloadEvidence(id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<SummaryDto> getSummary(@RequestHeader(name = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(billService.getSummary(retinueId));
     }
 
     @PostMapping("/{id}")

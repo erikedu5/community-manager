@@ -7,4 +7,5 @@ public class BillFilters {
 
     public int page;
     public int size;
+    public String concept;
 }

@@ -193,4 +193,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return actionStatusResponse;
     }
+
+    @Override
+    public Long getSummaryByCooperationId(long id) {
+        return paymentRepository.getSummaryByCooperationId(id);
+    }
 }

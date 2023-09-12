@@ -1,15 +1,9 @@
 package com.meztlisoft.communitymanager.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -26,13 +20,22 @@ public class EntryEntity {
     private String concept;
 
     @Column(name = "cantidad")
-    private String cost;
+    private Long cost;
+
+    @Column(name = "fecha_entrada")
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comitiva_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private RetinueEntity retinue;
+
+    @OneToOne
+    @JoinColumn(name = "cooperation_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private CooperationEntity cooperation;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "administrador_id", nullable = false)
@@ -60,11 +63,11 @@ public class EntryEntity {
         this.concept = concept;
     }
 
-    public String getCost() {
+    public Long getCost() {
         return cost;
     }
 
-    public void setCost(String cost) {
+    public void setCost(Long cost) {
         this.cost = cost;
     }
 
@@ -74,6 +77,22 @@ public class EntryEntity {
 
     public void setRetinue(RetinueEntity retinue) {
         this.retinue = retinue;
+    }
+
+    public CooperationEntity getCooperation() {
+        return cooperation;
+    }
+
+    public void setCooperation(CooperationEntity cooperation) {
+        this.cooperation = cooperation;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public AdministratorEntity getAdministrator() {

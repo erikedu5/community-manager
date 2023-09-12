@@ -2,6 +2,7 @@ package com.meztlisoft.communitymanager.controller;
 
 
 import com.meztlisoft.communitymanager.dto.EntryDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.EntryFilters;
 import com.meztlisoft.communitymanager.service.EntryService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,14 @@ public class EntryController {
     private final EntryService entryService;
 
     @PostMapping("/all")
-    public ResponseEntity<Page<EntryDto>> getAll(@RequestBody EntryFilters entryFilters) {
-        return ResponseEntity.ok(entryService.findAll(entryFilters));
+    public ResponseEntity<Page<EntryDto>> getAll(@RequestBody EntryFilters entryFilters,
+                                                 @RequestHeader(name = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(entryService.findAll(entryFilters, retinueId));
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<SummaryDto> getAll(@RequestHeader(name = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(entryService.getSummary(retinueId));
     }
 
     @PostMapping()

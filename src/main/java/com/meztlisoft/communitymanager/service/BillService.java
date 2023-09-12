@@ -2,6 +2,7 @@ package com.meztlisoft.communitymanager.service;
 
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.BillDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.BillFilters;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -15,4 +16,6 @@ public interface BillService {
     ActionStatusResponse uploadFile(MultipartFile file, Long id);
 
     BillDto createBill(Long retinueId, BillDto billDto, String token);
+
+    SummaryDto getSummary(Long retinueId);
 }

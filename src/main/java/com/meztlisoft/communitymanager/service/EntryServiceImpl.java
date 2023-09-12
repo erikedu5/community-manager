@@ -2,18 +2,21 @@ package com.meztlisoft.communitymanager.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.EntryDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.EntryFilters;
 import com.meztlisoft.communitymanager.entity.CooperationEntity;
 import com.meztlisoft.communitymanager.entity.EntryEntity;
-import com.meztlisoft.communitymanager.entity.PaymentEntity;
-import com.meztlisoft.communitymanager.repository.*;
-
+import com.meztlisoft.communitymanager.repository.AdministratorRepository;
+import com.meztlisoft.communitymanager.repository.CooperationRepository;
+import com.meztlisoft.communitymanager.repository.EntryRepository;
+import com.meztlisoft.communitymanager.repository.PaymentRepository;
+import com.meztlisoft.communitymanager.repository.RetinueRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-
+import java.util.Optional;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 @Service
@@ -37,9 +41,14 @@ public class EntryServiceImpl implements EntryService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public Page<EntryDto> findAll(EntryFilters entryFilters) {
+    public Page<EntryDto> findAll(EntryFilters entryFilters, Long retinueId) {
         Pageable page = PageRequest.of(entryFilters.getPage(), entryFilters.getSize());
-        Page<EntryEntity> entryEntities = entryRepository.findAll(page);
+        Page<EntryEntity> entryEntities;
+        if (Objects.isNull(entryFilters.getConcept())) {
+            entryEntities = entryRepository.findAllByRetinueId(retinueId, page);
+        } else {
+            entryEntities = entryRepository.findAllByConceptAndRetinueId(entryFilters.getConcept(), retinueId, page);
+        }
         List<EntryDto> entryDtoList = new ArrayList<>();
         entryEntities.forEach(entry -> entryDtoList.add(objectMapper.convertValue(entry, EntryDto.class)));
         return new PageImpl<>(entryDtoList, entryEntities.getPageable(), entryEntities.getTotalElements());
@@ -57,13 +66,25 @@ public class EntryServiceImpl implements EntryService {
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't create entry");
         }
         Claims claims = jwtService.decodeToken(token);
-        Long citizenId = Long.parseLong(claims.get("ciudadano_id").toString());
-
+        long citizenId = Long.parseLong(claims.get("ciudadano_id").toString());
         entry.setAdministrator(administratorRepository.findByCitizenIdAndActive(citizenId, true));
         entry.setRetinue(retinueRepository.findByIdAndActive(retinueId, true).orElseThrow());
+        entry.setDate(entryDto.getDate());
+        if (Objects.nonNull(entry.getCooperation())) {
+            entry.setConcept(entry.getConcept() + " de " + entry.getRetinue().getName());
+        }
         entry.setCreationDate(LocalDateTime.now());
         EntryEntity entrySaved =entryRepository.save(entry);
         return objectMapper.convertValue(entrySaved, EntryDto.class);
+    }
+
+    @Override
+    public SummaryDto getSummary(Long retinueId) {
+        Long summary = entryRepository.getSummary(retinueId);
+        SummaryDto summaryDto = new SummaryDto();
+        summaryDto.setSummary(summary);
+        summaryDto.setId(retinueId);
+        return summaryDto;
     }
 
     private EntryEntity creationEntryFromForm(EntryDto entryDto) {
@@ -74,13 +95,19 @@ public class EntryServiceImpl implements EntryService {
     }
 
     private EntryEntity createEntryFromCooperation(Long cooperationId) {
+        Optional<EntryEntity> entryExistent = entryRepository.existByCooperationId(cooperationId);
+        if (entryExistent.isPresent()) {
+            throw new HttpServerErrorException(HttpStatus.PRECONDITION_FAILED, "No se puede generar entrada de una cooperación ya creada");
+        }
         CooperationEntity cooperation = cooperationRepository.findById(cooperationId).orElseThrow();
-        AtomicReference<Long> cost = new AtomicReference<>(0L);
-        List<PaymentEntity> payments = paymentRepository.findAllByCooperationId(cooperationId);
-        payments.forEach(paymentEntity -> cost.updateAndGet(v -> v + paymentEntity.getPayment()));
+        if (cooperation.getLimitDate().isAfter(LocalDate.now())) {
+            throw new HttpClientErrorException(HttpStatus.PRECONDITION_REQUIRED, "No se puede generar entrada de una cooperación aun en curso");
+        }
+        Long payments = paymentRepository.getSummaryByCooperationId(cooperationId);
         EntryEntity entry = new EntryEntity();
         entry.setConcept("Cooperacion ".concat(cooperation.getConcept()));
-        entry.setCost(cost.toString());
+        entry.setCost(payments);
+        entry.setCooperation(cooperation);
         return entry;
     }
 }

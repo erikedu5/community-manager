@@ -3,6 +3,7 @@ package com.meztlisoft.communitymanager.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.BillDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.BillFilters;
 import com.meztlisoft.communitymanager.entity.BillEntity;
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
@@ -16,10 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +59,12 @@ public class BillServiceImpl implements BillService {
     @Override
     public Page<BillDto> getAll(BillFilters billFilters,  Long retinueId) {
         Pageable page = PageRequest.of(billFilters.getPage(), billFilters.getSize());
-        Page<BillEntity> entities = billRepository.findAllByRetinueId(retinueId, page);
+        Page<BillEntity> entities;
+        if (StringUtils.isBlank(billFilters.getConcept())) {
+            entities = billRepository.findAllByRetinueId(retinueId, page);
+        } else {
+            entities = billRepository.findAllByConceptAndRetinueId(billFilters.getConcept(), retinueId, page);
+        }
         List<BillDto> billDtoList = new ArrayList<>();
         entities.forEach(entity -> billDtoList.add(objectMapper.convertValue(entity, BillDto.class)));
         return new PageImpl<>(billDtoList, entities.getPageable(), entities.getTotalElements());
@@ -138,6 +142,14 @@ public class BillServiceImpl implements BillService {
         bill.setAdministrator(administratorRepository.findByCitizenIdAndActive(Long.parseLong(claims.get("ciudadano_id").toString()), true));
         BillEntity saved = billRepository.save(bill);
         return objectMapper.convertValue(saved, BillDto.class);
+    }
+
+    @Override
+    public SummaryDto getSummary(Long retinueId) {
+        SummaryDto summaryDto = new SummaryDto();
+        summaryDto.setSummary(billRepository.getSummary(retinueId));
+        summaryDto.setId(retinueId);
+        return summaryDto;
     }
 
 }

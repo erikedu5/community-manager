@@ -1,6 +1,7 @@
 package com.meztlisoft.communitymanager.service;
 
 import com.meztlisoft.communitymanager.dto.CooperationDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.CooperationFilters;
 import org.springframework.data.domain.Page;
 
@@ -14,4 +15,6 @@ public interface CooperationService {
     CooperationDto getById(long id);
 
     List<CooperationDto> getCatalog(Long retinueId);
+
+    SummaryDto calculateSummaryById(long id);
 }

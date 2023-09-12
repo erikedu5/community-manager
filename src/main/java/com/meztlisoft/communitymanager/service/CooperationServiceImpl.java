@@ -2,6 +2,7 @@ package com.meztlisoft.communitymanager.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.CooperationDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.CooperationFilters;
 import com.meztlisoft.communitymanager.entity.CooperationEntity;
 import com.meztlisoft.communitymanager.entity.specification.CooperationSpecification;
@@ -76,5 +77,13 @@ public class CooperationServiceImpl implements CooperationService {
         List<CooperationDto> dtos = new ArrayList<>();
         cooperations.forEach(cooperation -> dtos.add(objectMapper.convertValue(cooperation, CooperationDto.class)));
         return dtos;
+    }
+
+    @Override
+    public SummaryDto calculateSummaryById(long id) {
+        SummaryDto summary = new SummaryDto();
+        summary.setId(id);
+        summary.setSummary(paymentService.getSummaryByCooperationId(id));
+        return summary;
     }
 }

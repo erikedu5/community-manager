@@ -1,6 +1,7 @@
 package com.meztlisoft.communitymanager.controller;
 
 import com.meztlisoft.communitymanager.dto.CooperationDto;
+import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.CooperationFilters;
 import com.meztlisoft.communitymanager.service.CooperationService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,11 @@ public class CooperationController {
     @GetMapping("/{id}")
     public ResponseEntity<CooperationDto> getById(@PathVariable(name = "id") final long id) {
         return ResponseEntity.ok(cooperationService.getById(id));
+    }
+
+    @GetMapping("/amount/{id}")
+    public ResponseEntity<SummaryDto> getSummaryByCooperationId(@PathVariable(name = "id") final long id) {
+        return ResponseEntity.ok(cooperationService.calculateSummaryById(id));
     }
 
 }
