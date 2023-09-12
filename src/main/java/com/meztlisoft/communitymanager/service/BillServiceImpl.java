@@ -124,6 +124,7 @@ public class BillServiceImpl implements BillService {
         BillEntity bill = new BillEntity();
         bill.setConcept(billDto.getConcept());
         bill.setCost(billDto.getCost());
+        bill.setDate(billDto.getDate());
         bill.setCreationDate(LocalDateTime.now());
         bill.setRetinue(retinueRepository.findByIdAndActive(retinueId, true).orElseThrow());
         try {
