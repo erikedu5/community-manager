@@ -111,6 +111,9 @@ public class CitizenServiceImpl implements CitizenService {
                 citizen.setBirthday(citizenDto.getBirthday());
             }
 
+            citizen.setMarried(citizenDto.isMarried());
+            citizen.setNative(citizenDto.isNative());
+
             citizen.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
             citizen.setUpdateDate(LocalDateTime.now());
             CitizenEntity saved = citizenRepository.save(citizen);

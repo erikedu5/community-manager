@@ -37,6 +37,9 @@ public class CitizenEntity {
     @Column(name = "Nativo")
     private boolean isNative;
 
+    @Column(name = "casado")
+    private boolean isMarried;
+
     @Column(name = "activo")
     private Boolean active;
 
@@ -95,6 +98,14 @@ public class CitizenEntity {
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public boolean isMarried() {
+        return isMarried;
+    }
+
+    public void setMarried(boolean married) {
+        isMarried = married;
     }
 
     public Boolean getActive() {

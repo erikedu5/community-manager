@@ -24,7 +24,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,12 +86,16 @@ public class PaymentServiceImpl implements PaymentService {
     private void saveAssociateds(List<AssociatedEntity> associatedEntities, CooperationEntity cooperation) {
         List<PaymentEntity> payments = new ArrayList<>();
         associatedEntities.forEach(associated -> {
-            PaymentEntity payment = new PaymentEntity();
-            payment.setPayment(0L);
-            payment.setAssociated(associated);
-            payment.setCooperation(cooperation);
-            payment.setPaymentDate(LocalDateTime.now());
-            payments.add(payment);
+            Period period = associated.getCitizen().getBirthday().until(LocalDate.now());
+            int years = period.getYears();
+            if (years >= 18 || associated.getCitizen().isMarried()) {
+                PaymentEntity payment = new PaymentEntity();
+                payment.setPayment(0L);
+                payment.setAssociated(associated);
+                payment.setCooperation(cooperation);
+                payment.setPaymentDate(LocalDateTime.now());
+                payments.add(payment);
+            }
         });
         paymentRepository.saveAll(payments);
     }

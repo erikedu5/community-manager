@@ -17,4 +17,5 @@ public class CitizenDto {
     private String address;
     private LocalDate birthday;
     private boolean isNative;
+    private boolean isMarried;
 }
