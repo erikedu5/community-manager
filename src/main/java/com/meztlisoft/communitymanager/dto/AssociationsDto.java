@@ -9,5 +9,6 @@ public class AssociationsDto {
     private Long roleId;
     private Long retinueId;
     private Long benefit;
+    private boolean active;
 
 }

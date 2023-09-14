@@ -153,7 +153,7 @@ public class AssociationServiceImpl implements  AssociationService {
 
     private void addAssociationAndAdmin(CitizenEntity citizen, RetinueEntity retinue, AssociationsDto association, Long userEditor){
         AssociatedEntity associatedEntity = new AssociatedEntity();
-        associatedEntity.setActive(true);
+        associatedEntity.setActive(association.isActive());
         associatedEntity.setCreationDate(LocalDateTime.now());
         associatedEntity.setCitizen(citizen);
         associatedEntity.setRetinue(retinue);
