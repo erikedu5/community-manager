@@ -152,12 +152,13 @@ public class AssociationServiceImpl implements  AssociationService {
     }
 
     private void addAssociationAndAdmin(CitizenEntity citizen, RetinueEntity retinue, AssociationsDto association, Long userEditor){
-        AssociatedEntity associatedEntity = new AssociatedEntity();
+        AssociatedEntity associatedEntity = associationRepository
+                .findByRetinueIdAndCitizenId(retinue.getId(), citizen.getId()).orElse(new AssociatedEntity());
         associatedEntity.setActive(association.isActive());
         associatedEntity.setCreationDate(LocalDateTime.now());
         associatedEntity.setCitizen(citizen);
         associatedEntity.setRetinue(retinue);
-        associatedEntity.setBenefit(associatedEntity.getBenefit());
+        associatedEntity.setBenefit(association.getBenefit());
         associatedEntity.setUserEditor(userEditor);
         associatedEntities.add(associatedEntity);
         if (Objects.nonNull(association.getRoleId())) {
