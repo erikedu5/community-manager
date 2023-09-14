@@ -23,9 +23,10 @@ public class EntryController {
         return ResponseEntity.ok(entryService.findAll(entryFilters, retinueId));
     }
 
-    @GetMapping("/summary")
-    public ResponseEntity<SummaryDto> getAll(@RequestHeader(name = "retinueId") Long retinueId) {
-        return ResponseEntity.ok(entryService.getSummary(retinueId));
+    @PostMapping("/summary")
+    public ResponseEntity<SummaryDto> getSummary(@RequestBody EntryFilters entryFilters,
+                                             @RequestHeader(name = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(entryService.getSummary(entryFilters, retinueId));
     }
 
     @PostMapping()

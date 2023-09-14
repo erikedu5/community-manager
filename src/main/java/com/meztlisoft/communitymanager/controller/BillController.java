@@ -40,9 +40,10 @@ public class BillController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
-    @GetMapping("/summary")
-    public ResponseEntity<SummaryDto> getSummary(@RequestHeader(name = "retinueId") Long retinueId) {
-        return ResponseEntity.ok(billService.getSummary(retinueId));
+    @PostMapping("/summary")
+    public ResponseEntity<SummaryDto> getSummary(@RequestBody BillFilters billFilters,
+                                                 @RequestHeader(name = "retinueId") Long retinueId) {
+        return ResponseEntity.ok(billService.getSummary(billFilters, retinueId));
     }
 
     @PostMapping("/{id}")

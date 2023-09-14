@@ -6,11 +6,9 @@ import com.meztlisoft.communitymanager.dto.SummaryDto;
 import com.meztlisoft.communitymanager.dto.filters.EntryFilters;
 import com.meztlisoft.communitymanager.entity.CooperationEntity;
 import com.meztlisoft.communitymanager.entity.EntryEntity;
-import com.meztlisoft.communitymanager.repository.AdministratorRepository;
-import com.meztlisoft.communitymanager.repository.CooperationRepository;
-import com.meztlisoft.communitymanager.repository.EntryRepository;
-import com.meztlisoft.communitymanager.repository.PaymentRepository;
-import com.meztlisoft.communitymanager.repository.RetinueRepository;
+import com.meztlisoft.communitymanager.entity.specification.EntrySpecification;
+import com.meztlisoft.communitymanager.repository.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -33,6 +32,7 @@ import org.springframework.web.client.HttpServerErrorException;
 public class EntryServiceImpl implements EntryService {
 
     private final EntryRepository entryRepository;
+    private final EntryCustomRepository entryCustomRepository;
     private final AdministratorRepository administratorRepository;
     private final CooperationRepository cooperationRepository;
     private final PaymentRepository paymentRepository;
@@ -43,12 +43,8 @@ public class EntryServiceImpl implements EntryService {
     @Override
     public Page<EntryDto> findAll(EntryFilters entryFilters, Long retinueId) {
         Pageable page = PageRequest.of(entryFilters.getPage(), entryFilters.getSize());
-        Page<EntryEntity> entryEntities;
-        if (Objects.isNull(entryFilters.getConcept())) {
-            entryEntities = entryRepository.findAllByRetinueId(retinueId, page);
-        } else {
-            entryEntities = entryRepository.findAllByConceptAndRetinueId(entryFilters.getConcept(), retinueId, page);
-        }
+        Specification<EntryEntity> specification = EntrySpecification.getFilteredEntry(entryFilters, retinueId);
+        Page<EntryEntity> entryEntities = entryRepository.findAll(specification, page);
         List<EntryDto> entryDtoList = new ArrayList<>();
         entryEntities.forEach(entry -> entryDtoList.add(objectMapper.convertValue(entry, EntryDto.class)));
         return new PageImpl<>(entryDtoList, entryEntities.getPageable(), entryEntities.getTotalElements());
@@ -79,8 +75,9 @@ public class EntryServiceImpl implements EntryService {
     }
 
     @Override
-    public SummaryDto getSummary(Long retinueId) {
-        Long summary = entryRepository.getSummary(retinueId);
+    public SummaryDto getSummary(EntryFilters entryFilters, Long retinueId) {
+        Specification<EntryEntity> specification = EntrySpecification.getFilteredEntry(entryFilters, retinueId);
+        Long summary = entryCustomRepository.getSummary(specification);
         SummaryDto summaryDto = new SummaryDto();
         summaryDto.setSummary(summary);
         summaryDto.setId(retinueId);

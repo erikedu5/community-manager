@@ -10,5 +10,5 @@ public interface EntryService {
 
     EntryDto save(EntryDto entryDto, String token, Long retinueId);
 
-    SummaryDto getSummary(Long retinueId);
+    SummaryDto getSummary(EntryFilters entryFilters, Long retinueId);
 }

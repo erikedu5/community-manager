@@ -17,5 +17,5 @@ public interface BillService {
 
     BillDto createBill(Long retinueId, BillDto billDto, String token);
 
-    SummaryDto getSummary(Long retinueId);
+    SummaryDto getSummary(BillFilters billFilters,Long retinueId);
 }

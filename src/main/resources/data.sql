@@ -31,8 +31,8 @@ INSERT INTO public.beneficio
 VALUES(3, true, 'Por Persona');
 
 INSERT INTO public.ciudadanos
-(id,activo, curp, nativo, descripcion, direccion, fecha_actualizacion, fecha_creacion, fecha_nacimiento, nombre, usuario_editor)
-VALUES(0, true, 'AAAA000000HHHHHH00', true,  NULL, NULL, NULL, now(), now(), 'Administrador de sistema', null);
+(id, activo, direccion, fecha_nacimiento, fecha_creacion, curp, descripcion, nativo, nombre, fecha_actualizacion, usuario_editor, casado)
+VALUES(0, true, null, now(), now(), 'AAAA000000HHHHHH00', null, true, 'Administrador de sistema', now(), 0, true);
 
 INSERT INTO public.users
 (id, active, user_name, "password", ciudadano_id)
