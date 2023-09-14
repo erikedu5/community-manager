@@ -126,4 +126,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return actionStatusResponse;
     }
+
+    @Override
+    public UserDto getLoginName(long citizenId) {
+        UserDto user = new UserDto();
+        UserEntity ur = userRepository.findByCitizenId(citizenId);
+        user.setUserName(ur.getUsername());
+        user.setCitizenId(ur.getCitizen().getId());
+        return user;
+    }
 }

@@ -28,6 +28,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.create(userDto));
     }
 
+    @GetMapping("/getLoginName/{id}")
+    public  ResponseEntity<UserDto> getLoginName(@PathVariable(name = "id") final long citizenId) {
+        return ResponseEntity.ok(authenticationService.getLoginName(citizenId));
+    }
+
     @PutMapping("/changePassword/{id}")
     public ResponseEntity<ActionStatusResponse> update(@PathVariable(name = "id") final long id,
                                                        @RequestBody UserDto userDto) {

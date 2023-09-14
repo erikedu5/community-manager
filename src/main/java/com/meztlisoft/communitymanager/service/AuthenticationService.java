@@ -14,4 +14,6 @@ public interface AuthenticationService {
     ActionStatusResponse change_password(long id, UserDto userDto);
 
     ActionStatusResponse delete(long id);
+
+    UserDto getLoginName(long citizenId);
 }
