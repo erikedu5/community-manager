@@ -144,8 +144,8 @@ public class AssociationServiceImpl implements  AssociationService {
         Optional<AssociatedEntity> associated = associationRepository.findByRetinueIdAndCitizenId(retinue.getId(), citizen.getId());
         dto.setMember(associated.isPresent());
         associated.ifPresent(associatedEntity -> dto.setBenefit(associatedEntity.getBenefit()));
-        AdministratorEntity administrator = administratorRepository.findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId());
-        dto.setRole(Objects.nonNull(administrator) ?administrator.getRole(): null);
+        Optional<AdministratorEntity> administrator = administratorRepository.findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId());
+        administrator.ifPresent(admin -> dto.setRole(admin.getRole()));
         dto.setCitizenName(citizen.getName());
         dto.setCitizenId(citizen.getId());
         return dto;
@@ -162,7 +162,8 @@ public class AssociationServiceImpl implements  AssociationService {
         associatedEntity.setUserEditor(userEditor);
         associatedEntities.add(associatedEntity);
         if (Objects.nonNull(association.getRoleId())) {
-            AdministratorEntity administrator = new AdministratorEntity();
+            AdministratorEntity administrator = administratorRepository
+                    .findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId()).orElse(new AdministratorEntity());
             administrator.setRole(roleRepository.findById(association.getRoleId()).orElseThrow());
             administrator.setUserEditor(userEditor);
             administrator.setActive(true);

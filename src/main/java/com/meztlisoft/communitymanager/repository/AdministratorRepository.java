@@ -14,10 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdministratorRepository extends JpaRepository<AdministratorEntity, Long>, JpaSpecificationExecutor<AdministratorEntity> {
 
-
-    @Query("FROM AdministratorEntity a WHERE a.id > 0 and a.active = true")
-    List<AdministratorEntity> findAllActive();
-
     boolean existsByRoleAndRetinue(RoleEntity role, RetinueEntity retinue);
 
     Optional<AdministratorEntity> findByIdAndActive(long id, boolean active);
@@ -25,7 +21,7 @@ public interface AdministratorRepository extends JpaRepository<AdministratorEnti
     List<AdministratorEntity> findByCitizenAndActive(CitizenEntity citizen, boolean active);
 
     @Query("FROM AdministratorEntity a where a.citizen.id = :citizenId and a.retinue.id = :retinueId")
-    AdministratorEntity findRoleByCitizenIdAndRetinueId(Long citizenId, Long retinueId);
+    Optional<AdministratorEntity> findRoleByCitizenIdAndRetinueId(Long citizenId, Long retinueId);
 
     @Query("FROM AdministratorEntity a WHERE a.citizen.id = :citizenId and a.active= :active")
     AdministratorEntity findByCitizenIdAndActive(long citizenId, boolean active);
