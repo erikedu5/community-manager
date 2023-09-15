@@ -17,6 +17,10 @@ public interface AssociationRepository extends JpaRepository<AssociatedEntity, L
     @Query("FROM AssociatedEntity a WHERE a.retinue.id = :retinueId and a.id not in :ids")
     List<AssociatedEntity> findNotIn(List<Long> ids, Long retinueId);
 
-    @Query("FROM AssociatedEntity a WHERE a.retinue.id= :id and a.citizen.id= :citizenId and a.active= true")
+    @Query("FROM AssociatedEntity a WHERE a.retinue.id= :id and a.citizen.id= :citizenId")
     Optional<AssociatedEntity> findByRetinueIdAndCitizenId(Long id, Long citizenId);
+
+
+    @Query("FROM AssociatedEntity a WHERE a.retinue.id= :id and a.citizen.id= :citizenId and a.active= true")
+    Optional<AssociatedEntity> findByRetinueIdAndCitizenIdAndActive(Long id, Long citizenId);
 }
