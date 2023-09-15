@@ -4,6 +4,7 @@ import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.ULocale;
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.AddPaymentDto;
+import com.meztlisoft.communitymanager.dto.DebtorsDto;
 import com.meztlisoft.communitymanager.dto.PaymentDto;
 import com.meztlisoft.communitymanager.dto.filters.PaymentFilters;
 import com.meztlisoft.communitymanager.entity.AdministratorEntity;
@@ -38,6 +39,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -248,5 +250,51 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (JRException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public File generateReport(Long cooperationId) {
+        try {
+            List<PaymentEntity> payments = paymentRepository.findAllByCooperationIdIncomplete(cooperationId);
+            CooperationEntity cooperation = cooperationRepository.findById(cooperationId).orElseThrow();
+
+            Map<String, Object> empParams = new HashMap<>();
+            DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            empParams.put("date", LocalDate.now().format(formatters));
+            empParams.put("retinueName", cooperation.getRetinue().getName());
+            empParams.put("cooperationConcept", cooperation.getConcept());
+
+            JRBeanCollectionDataSource citizens = new JRBeanCollectionDataSource(this.parseDebtors(payments));
+
+            empParams.put("citizens", citizens);
+
+            JasperPrint empReport = JasperFillManager.fillReport(
+                    JasperCompileManager.compileReport(
+                            ResourceUtils.getFile("classpath:reports/deudores.jrxml").getAbsolutePath()),
+                    empParams,
+                    new JREmptyDataSource());
+
+            File receipt = new File("deudores.pdf");
+            FileUtils.writeByteArrayToFile(receipt, JasperExportManager.exportReportToPdf(empReport));
+            return receipt;
+        } catch (JRException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<DebtorsDto> parseDebtors(List<PaymentEntity> payments) {
+        List<DebtorsDto> debtors = new ArrayList<>();
+        payments.forEach(paymentEntity -> {
+            DebtorsDto debtor = new DebtorsDto();
+            debtor.setName(paymentEntity.getAssociated().getCitizen().getName());
+            debtor.setDescription(paymentEntity.getAssociated().getCitizen().getDescription());
+            debtor.setBenefit(paymentEntity.getAssociated().getBenefit().toString());
+            debtor.setAbonado(paymentEntity.getPayment());
+            Long baseCooperation = paymentEntity.getAssociated().getCitizen().isNative() ? paymentEntity.getCooperation().getBaseCooperation(): paymentEntity.getCooperation().getNotNativeCooperation();
+            Long accumulateCooperation = baseCooperation * paymentEntity.getAssociated().getBenefit();
+            debtor.setTotal(accumulateCooperation);
+            debtors.add(debtor);
+        });
+        return debtors;
     }
 }

@@ -22,4 +22,7 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long>, J
 
     @Query("FROM PaymentEntity pe WHERE pe.associated.id = :associatedId and pe.cooperation.id = :cooperationId")
     Optional<PaymentEntity> findByAssociatedIdAndCooperationId(Long associatedId, Long cooperationId);
+
+    @Query("FROM PaymentEntity p WHERE p.cooperation.id= :cooperationId and p.complete = false ORDER BY p.associated.citizen.name DESC")
+    List<PaymentEntity> findAllByCooperationIdIncomplete(Long cooperationId);
 }

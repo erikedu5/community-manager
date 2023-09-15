@@ -49,4 +49,12 @@ public class PaymentController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
     }
+
+    @GetMapping("/report/{cooperationId}")
+    private ResponseEntity<Resource> getReport(@PathVariable(name = "cooperationId") final Long cooperationId) throws MalformedURLException {
+        File file = paymentService.generateReport(cooperationId);
+        Resource resource = new UrlResource(file.toURI());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+    }
 }
