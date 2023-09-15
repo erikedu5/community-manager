@@ -150,4 +150,11 @@ public class CitizenServiceImpl implements CitizenService {
         }
         return actionStatusResponse;
     }
+
+    @Override
+    public List<CitizenDto> getCatalog() {
+        List<CitizenDto> citizens = new ArrayList<>();
+        citizenRepository.findAll().forEach(citizen -> citizens.add(objectMapper.convertValue(citizen, CitizenDto.class)));
+        return citizens;
+    }
 }

@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/citizen")
 @RequiredArgsConstructor
@@ -39,6 +41,11 @@ public class CitizenController {
     public ResponseEntity<Page<CitizenDto>> getAll(@RequestBody CitizenFilters citizenFilters,
                                                    @RequestHeader(value = "retinueId") Long retinueId) {
         return ResponseEntity.ok(citizenService.getAll(citizenFilters, retinueId));
+    }
+
+    @GetMapping("/catalog")
+    public ResponseEntity<List<CitizenDto>> getCatalog() {
+        return ResponseEntity.ok(citizenService.getCatalog());
     }
 
     @GetMapping("/{id}")
