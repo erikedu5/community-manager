@@ -6,14 +6,15 @@ import com.meztlisoft.communitymanager.dto.PaymentDto;
 import com.meztlisoft.communitymanager.dto.filters.PaymentFilters;
 import com.meztlisoft.communitymanager.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/payment")
@@ -37,5 +38,15 @@ public class PaymentController {
     @PostMapping("/volunteer")
     private ResponseEntity<ActionStatusResponse> makeVolunteer(@RequestBody AddPaymentDto addPaymentDto) {
         return ResponseEntity.ok(paymentService.makeVolunteer(addPaymentDto));
+    }
+    
+    @GetMapping("/receipt/{associatedId}/{cooperationId}")
+    private ResponseEntity<Resource> getReceipt(@PathVariable(name = "associatedId") final Long associatedId,
+                                                @PathVariable(name = "cooperationId") final Long cooperationId,
+                                                @RequestHeader(name = "Authorization") String token) throws MalformedURLException {
+        File file = paymentService.createReceipt(associatedId, cooperationId, token);
+        Resource resource = new UrlResource(file.toURI());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
     }
 }

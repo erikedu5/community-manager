@@ -1,33 +1,50 @@
 package com.meztlisoft.communitymanager.service;
 
+import com.ibm.icu.text.RuleBasedNumberFormat;
+import com.ibm.icu.util.ULocale;
 import com.meztlisoft.communitymanager.dto.ActionStatusResponse;
 import com.meztlisoft.communitymanager.dto.AddPaymentDto;
 import com.meztlisoft.communitymanager.dto.PaymentDto;
 import com.meztlisoft.communitymanager.dto.filters.PaymentFilters;
 import com.meztlisoft.communitymanager.entity.AdministratorEntity;
 import com.meztlisoft.communitymanager.entity.AssociatedEntity;
+import com.meztlisoft.communitymanager.entity.CitizenEntity;
 import com.meztlisoft.communitymanager.entity.CooperationEntity;
 import com.meztlisoft.communitymanager.entity.CreditEntity;
 import com.meztlisoft.communitymanager.entity.PaymentEntity;
 import com.meztlisoft.communitymanager.entity.specification.PaymentSpecification;
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.AssociationRepository;
+import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import com.meztlisoft.communitymanager.repository.CooperationRepository;
 import com.meztlisoft.communitymanager.repository.CreditRepository;
 import com.meztlisoft.communitymanager.repository.PaymentRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CreditRepository creditRepository;
     private final JwtService jwtService;
     private final CooperationRepository cooperationRepository;
+    private final CitizenRepository citizenRepository;
 
     @Override
     public Page<PaymentDto> getPaymentInfo(long cooperationId, PaymentFilters paymentFilters) {
@@ -197,5 +215,41 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Long getSummaryByCooperationId(long id) {
         return paymentRepository.getSummaryByCooperationId(id);
+    }
+
+    @Override
+    public File createReceipt(Long associatedId, Long cooperationId, String token) {
+        try {
+            PaymentEntity payment = paymentRepository.findByAssociatedIdAndCooperationId(associatedId, cooperationId).orElseThrow();
+            Claims claims = jwtService.decodeToken(token);
+            long citizenId = Long.parseLong(claims.get("ciudadano_id").toString());
+            CitizenEntity citizenAdmin = citizenRepository.findById(citizenId).orElseThrow();
+
+            Map<String, Object> empParams = new HashMap<>();
+            DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            empParams.put("date", payment.getPaymentDate().toLocalDate().format(formatters));
+            empParams.put("retinueName", payment.getCooperation().getRetinue().getName());
+            empParams.put("citizenName", payment.getAssociated().getCitizen().getName());
+            ULocale locale = new ULocale("es"); // Cambia "es" al idioma deseado
+            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
+            Long cost = payment.getAssociated().getCitizen().isNative() ? payment.getCooperation().getBaseCooperation() : payment.getCooperation().getNotNativeCooperation();
+            empParams.put("cooperationLetter", formatter.format(cost));
+            empParams.put("cooperationCost", cost);
+                    empParams.put("cooperationConcept", payment.getCooperation().getConcept());
+            empParams.put("id", "PAY-" + payment.getId() + "-COP-" + payment.getCooperation().getId() + "-RET-" + payment.getCooperation().getRetinue().getId());
+            empParams.put("adminName", citizenAdmin.getName());
+
+        JasperPrint empReport = JasperFillManager.fillReport(
+                JasperCompileManager.compileReport(
+                        ResourceUtils.getFile("classpath:reports/recibo.jrxml").getAbsolutePath()),
+                empParams,
+                new JREmptyDataSource());
+
+            File receipt = new File("recibo.pdf");
+            FileUtils.writeByteArrayToFile(receipt, JasperExportManager.exportReportToPdf(empReport));
+            return receipt;
+        } catch (JRException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

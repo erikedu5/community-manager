@@ -19,4 +19,7 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long>, J
 
     @Query("SELECT SUM(pe.payment) FROM PaymentEntity pe WHERE pe.cooperation.id = :id")
     Long getSummaryByCooperationId(long id);
+
+    @Query("FROM PaymentEntity pe WHERE pe.associated.id = :associatedId and pe.cooperation.id = :cooperationId")
+    Optional<PaymentEntity> findByAssociatedIdAndCooperationId(Long associatedId, Long cooperationId);
 }
