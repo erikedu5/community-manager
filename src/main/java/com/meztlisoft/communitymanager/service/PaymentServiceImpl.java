@@ -20,6 +20,17 @@ import com.meztlisoft.communitymanager.repository.CooperationRepository;
 import com.meztlisoft.communitymanager.repository.CreditRepository;
 import com.meztlisoft.communitymanager.repository.PaymentRepository;
 import io.jsonwebtoken.Claims;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -33,23 +44,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -153,7 +150,7 @@ public class PaymentServiceImpl implements PaymentService {
             Long paymentValue = Objects.nonNull(payment.getPayment())? payment.getPayment(): 0;
             payment.setPayment(paymentValue + addPaymentDto.getPayment());
 
-            if (payment.getPayment() >= cooperationBase) {
+            if (payment.getPayment() >= (cooperationBase * association.getBenefit())) {
                 payment.setPaymentDate(LocalDateTime.now());
                 payment.setComplete(true);
             }
@@ -232,7 +229,7 @@ public class PaymentServiceImpl implements PaymentService {
             empParams.put("citizenName", payment.getAssociated().getCitizen().getName());
             ULocale locale = new ULocale("es"); // Cambia "es" al idioma deseado
             RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
-            Long cost = payment.getAssociated().getCitizen().isNative() ? payment.getCooperation().getBaseCooperation() : payment.getCooperation().getNotNativeCooperation();
+            Long cost = payment.getPayment();
             empParams.put("cooperationLetter", formatter.format(cost));
             empParams.put("cooperationCost", cost);
                     empParams.put("cooperationConcept", payment.getCooperation().getConcept());
