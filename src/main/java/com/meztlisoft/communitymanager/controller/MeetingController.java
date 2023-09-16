@@ -6,6 +6,9 @@ import com.meztlisoft.communitymanager.dto.MeetingDto;
 import com.meztlisoft.communitymanager.dto.MeetingResponse;
 import com.meztlisoft.communitymanager.service.MeetingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -46,6 +51,14 @@ public class MeetingController {
     @PostMapping("/all")
     public ResponseEntity<List<MeetingResponse>> getAll(@RequestHeader(name = "retinueId") Long retinueId) {
         return ResponseEntity.ok(meetingService.getAll(retinueId));
+    }
+
+    @GetMapping("/report/{meetingId}")
+    private ResponseEntity<Resource> getReport(@PathVariable(name = "meetingId") final Long meetingId) throws MalformedURLException {
+        File file = meetingService.meetingReport(meetingId);
+        Resource resource = new UrlResource(file.toURI());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
     }
 
 }

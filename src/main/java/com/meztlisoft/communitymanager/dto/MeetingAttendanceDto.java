@@ -8,5 +8,5 @@ public class MeetingAttendanceDto {
     private Boolean check;
     private Long associatedId;
     private String citizenName;
-    private String citizenId;
+    private Long citizenId;
 }

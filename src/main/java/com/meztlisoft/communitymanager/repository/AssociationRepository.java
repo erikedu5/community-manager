@@ -14,6 +14,9 @@ public interface AssociationRepository extends JpaRepository<AssociatedEntity, L
     @Query("from AssociatedEntity a where a.retinue.id = :id")
     List<AssociatedEntity> findAllByRetinueId(long id);
 
+    @Query("from AssociatedEntity a where a.retinue.id = :id and a.active = true")
+    List<AssociatedEntity> findAllByRetinueIdAAndActiveTrue(long id);
+
     @Query("FROM AssociatedEntity a WHERE a.retinue.id = :retinueId and a.id not in :ids")
     List<AssociatedEntity> findNotIn(List<Long> ids, Long retinueId);
 
