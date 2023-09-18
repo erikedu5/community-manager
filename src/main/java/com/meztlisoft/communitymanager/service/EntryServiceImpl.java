@@ -1,22 +1,27 @@
 package com.meztlisoft.communitymanager.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meztlisoft.communitymanager.dto.EntryDto;
-import com.meztlisoft.communitymanager.dto.SummaryDto;
+import com.meztlisoft.communitymanager.dto.*;
+import com.meztlisoft.communitymanager.dto.filters.BillFilters;
+import com.meztlisoft.communitymanager.dto.filters.DatesForReportFilter;
 import com.meztlisoft.communitymanager.dto.filters.EntryFilters;
-import com.meztlisoft.communitymanager.entity.CooperationEntity;
-import com.meztlisoft.communitymanager.entity.EntryEntity;
+import com.meztlisoft.communitymanager.entity.*;
+import com.meztlisoft.communitymanager.entity.specification.BillSpecification;
 import com.meztlisoft.communitymanager.entity.specification.EntrySpecification;
 import com.meztlisoft.communitymanager.repository.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.io.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -33,6 +39,8 @@ public class EntryServiceImpl implements EntryService {
 
     private final EntryRepository entryRepository;
     private final EntryCustomRepository entryCustomRepository;
+    private final BillRepository billRepository;
+    private final BillCustomRepository billCustomRepository;
     private final AdministratorRepository administratorRepository;
     private final CooperationRepository cooperationRepository;
     private final PaymentRepository paymentRepository;
@@ -82,6 +90,80 @@ public class EntryServiceImpl implements EntryService {
         summaryDto.setSummary(summary);
         summaryDto.setId(retinueId);
         return summaryDto;
+    }
+
+    @Override
+    public File getReport(DatesForReportFilter datesForReportFilter, Long retinueId) {
+        try {
+            RetinueEntity retinue = retinueRepository.findByIdAndActive(retinueId, true).orElseThrow();
+
+            EntryFilters entryFilters = new EntryFilters();
+            entryFilters.setDateFrom(datesForReportFilter.getDateFrom());
+            entryFilters.setDateTo(datesForReportFilter.getDateTo());
+            Specification<EntryEntity> specification = EntrySpecification.getFilteredEntry(entryFilters, retinueId);
+            List<EntryEntity> entryLst = entryRepository.findAll(specification);
+            Long summaryEntry = entryCustomRepository.getSummary(specification);
+
+            BillFilters billFilters = new BillFilters();
+            billFilters.setDateFrom(datesForReportFilter.getDateFrom());
+            billFilters.setDateTo(datesForReportFilter.getDateTo());
+            Specification<BillEntity> billSpecification = BillSpecification.getFilteredBill(billFilters, retinueId);
+            List<BillEntity> billLst = billRepository.findAll(billSpecification);
+            Long summaryBill = billCustomRepository.getSummary(billSpecification);
+
+            Map<String, Object> empParams = new HashMap<>();
+            DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            empParams.put("date", LocalDate.now().format(formatters));
+            empParams.put("retinueName", retinue.getName());
+
+            empParams.put("totalEntries", summaryEntry);
+            empParams.put("totalBills", summaryBill);
+            empParams.put("totalFinal", summaryEntry - summaryBill);
+
+            JRBeanCollectionDataSource entries = new JRBeanCollectionDataSource(this.parseEntryDto(entryLst));
+            JRBeanCollectionDataSource bills = new JRBeanCollectionDataSource(this.parseBillsDto(billLst));
+
+            empParams.put("entries", entries);
+            empParams.put("bills", bills);
+
+            JasperPrint empReport = JasperFillManager.fillReport(
+                    JasperCompileManager.compileReport(
+                            ResourceUtils.getFile("classpath:reports/corteCaja.jrxml").getAbsolutePath()),
+                    empParams,
+                    new JREmptyDataSource());
+
+            File receipt = new File("corteCaja.pdf");
+            FileUtils.writeByteArrayToFile(receipt, JasperExportManager.exportReportToPdf(empReport));
+            return receipt;
+        } catch (JRException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<BillReportDto> parseBillsDto(List<BillEntity> billEntities) {
+        List<BillReportDto> dtos = new ArrayList<>();
+        billEntities.forEach(billEntity -> {
+            BillReportDto dto = objectMapper.convertValue(billEntity, BillReportDto.class);
+            DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            dto.setDate(billEntity.getDate().format(formatters));
+            dtos.add(dto);
+        });
+        return dtos;
+    }
+
+    private List<EntryReportDto> parseEntryDto(List<EntryEntity> entryLst) {
+        List<EntryReportDto> dtos = new ArrayList<>();
+        entryLst.forEach(entry -> {
+            EntryReportDto reportDto = new EntryReportDto();
+            reportDto.setId(entry.getId());
+            DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            reportDto.setDate(entry.getDate().format(formatters));
+            reportDto.setCost(entry.getCost());
+            reportDto.setConcept(entry.getConcept());
+            reportDto.setIsCooperation(Objects.nonNull(entry.getCooperation()) ? "Si": "No");
+            dtos.add(reportDto);
+        });
+        return dtos;
     }
 
     private EntryEntity creationEntryFromForm(EntryDto entryDto) {

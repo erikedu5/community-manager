@@ -27,8 +27,6 @@ public class EntrySpecification {
 
             predicates.add(criteriaBuilder.equal(root.get("retinue").get("id"), retinueId));
 
-            criteriaBuilder.sumAsLong(root.get("cost"));
-
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
