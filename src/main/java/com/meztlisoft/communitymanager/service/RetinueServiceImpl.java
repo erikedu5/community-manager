@@ -76,7 +76,10 @@ public class RetinueServiceImpl implements RetinueService {
         List<RetinueEntity> retinues = retinueRepository.findAll();
         List<RetinueDto> dtos = new ArrayList<>();
         for (RetinueEntity retinue : retinues) {
-            dtos.add(objectMapper.convertValue(retinue, RetinueDto.class));
+            RetinueDto dto = objectMapper.convertValue(retinue, RetinueDto.class);
+            dto.setUnitBenefitName(retinue.getUnitBenefit().getName());
+            dto.setUnitBenefit(retinue.getUnitBenefit().getId());
+            dtos.add(dto);
         }
         return dtos;
     }
