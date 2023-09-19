@@ -143,7 +143,9 @@ public class AssociationServiceImpl implements  AssociationService {
         dto.setRetinueName(retinue.getName());
         Optional<AssociatedEntity> associated = associationRepository.findByRetinueIdAndCitizenIdAndActive(retinue.getId(), citizen.getId());
         dto.setMember(associated.isPresent());
-        associated.ifPresent(associatedEntity -> dto.setBenefit(associatedEntity.getBenefit()));
+        if (associated.isPresent()) {
+            dto.setBenefit(associated.get().getBenefit());
+        }
         Optional<AdministratorEntity> administrator = administratorRepository.findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId());
         administrator.ifPresent(admin -> dto.setRole(admin.getRole()));
         dto.setCitizenName(citizen.getName());
