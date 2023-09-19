@@ -160,7 +160,12 @@ public class AssociationServiceImpl implements  AssociationService {
         associatedEntity.setRetinue(retinue);
         associatedEntity.setBenefit(association.getBenefit());
         associatedEntity.setUserEditor(userEditor);
-        associatedEntities.add(associatedEntity);
+        if (Objects.isNull(associatedEntity.getId())) {
+            associatedEntities.add(associatedEntity);
+        } else {
+            associatedEntity.setUpdateDate(LocalDateTime.now());
+            associationRepository.save(associatedEntity);
+        }
         if (Objects.nonNull(association.getRoleId())) {
             AdministratorEntity administrator = administratorRepository
                     .findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId()).orElse(new AdministratorEntity());
@@ -170,7 +175,12 @@ public class AssociationServiceImpl implements  AssociationService {
             administrator.setCreationDate(LocalDateTime.now());
             administrator.setCitizen(citizen);
             administrator.setRetinue(retinue);
-            admins.add(administrator);
+            if (Objects.isNull(administrator.getId())) {
+                admins.add(administrator);
+            } else {
+                administrator.setUpdateDate(LocalDateTime.now());
+                administratorRepository.save(administrator);
+            }
         }
     }
 

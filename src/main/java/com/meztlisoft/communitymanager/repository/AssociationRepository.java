@@ -11,16 +11,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AssociationRepository extends JpaRepository<AssociatedEntity, Long>, JpaSpecificationExecutor<AssociatedEntity> {
 
-    @Query("from AssociatedEntity a where a.retinue.id = :id")
+    @Query("from AssociatedEntity a where a.retinue.id = :id and a.active = true")
     List<AssociatedEntity> findAllByRetinueId(long id);
 
     @Query("from AssociatedEntity a where a.retinue.id = :id and a.active = true")
     List<AssociatedEntity> findAllByRetinueIdAAndActiveTrue(long id);
 
-    @Query("FROM AssociatedEntity a WHERE a.retinue.id = :retinueId and a.id not in :ids")
+    @Query("FROM AssociatedEntity a WHERE a.retinue.id = :retinueId and a.id not in :ids and a.active = true")
     List<AssociatedEntity> findNotIn(List<Long> ids, Long retinueId);
 
-    @Query("FROM AssociatedEntity a WHERE a.retinue.id= :id and a.citizen.id= :citizenId")
+    @Query("FROM AssociatedEntity a WHERE a.retinue.id= :id and a.citizen.id= :citizenId and a.active = true")
     Optional<AssociatedEntity> findByRetinueIdAndCitizenId(Long id, Long citizenId);
 
 

@@ -78,6 +78,16 @@ public class PaymentServiceImpl implements PaymentService {
             dto.setBenefit(payment.getAssociated().getBenefit());
             dto.setAssociatedId(payment.getAssociated().getId());
             dto.setPayment(payment.getPayment());
+            Long total;
+            if (payment.getAssociated().getCitizen().isNative()) {
+                total = payment.getCooperation().getBaseCooperation();
+            } else {
+                total = payment.getCooperation().getNotNativeCooperation();
+            }
+            if (!payment.getCooperation().isByUnity()) {
+                total = total * payment.getAssociated().getBenefit();
+            }
+            dto.setTotal(total);
             dto.setVolunteer(payment.isVolunteer());
             dto.setComplete(payment.isComplete());
             paymentDtos.add(dto);
