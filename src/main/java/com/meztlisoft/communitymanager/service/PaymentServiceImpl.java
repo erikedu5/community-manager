@@ -84,7 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
             } else {
                 total = payment.getCooperation().getNotNativeCooperation();
             }
-            if (!payment.getCooperation().isByUnity()) {
+            if (payment.getCooperation().isByUnity()) {
                 total = total * payment.getAssociated().getBenefit();
             }
             dto.setTotal(total);
@@ -162,7 +162,7 @@ public class PaymentServiceImpl implements PaymentService {
             Long paymentValue = Objects.nonNull(payment.getPayment())? payment.getPayment(): 0;
             payment.setPayment(paymentValue + addPaymentDto.getPayment());
 
-            if (payment.getPayment() >= (cooperationBase * association.getBenefit())) {
+            if (payment.getPayment() >= cooperationBase) {
                 payment.setPaymentDate(LocalDateTime.now());
                 payment.setComplete(true);
             }
@@ -242,7 +242,7 @@ public class PaymentServiceImpl implements PaymentService {
             ULocale locale = new ULocale("es"); // Cambia "es" al idioma deseado
             RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.SPELLOUT);
             Long cost = payment.getPayment();
-            empParams.put("cooperationLetter", formatter.format(cost));
+            empParams.put("cooperationLetter", formatter.format(cost) + " pesos 00/100 M.N.");
             empParams.put("cooperationCost", cost);
                     empParams.put("cooperationConcept", payment.getCooperation().getConcept());
             empParams.put("id", "PAY-" + payment.getId() + "-COP-" + payment.getCooperation().getId() + "-RET-" + payment.getCooperation().getRetinue().getId());
