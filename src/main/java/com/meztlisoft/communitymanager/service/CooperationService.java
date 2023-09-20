@@ -14,7 +14,7 @@ public interface CooperationService {
 
     CooperationDto getById(long id);
 
-    List<CooperationDto> getCatalog(Long retinueId);
+    List<CooperationDto> getCatalog(Long retinueId, boolean inRange);
 
     SummaryDto calculateSummaryById(long id);
 }

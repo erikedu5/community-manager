@@ -72,8 +72,13 @@ public class CooperationServiceImpl implements CooperationService {
     }
 
     @Override
-    public List<CooperationDto> getCatalog(Long retinueId) {
-        List<CooperationEntity> cooperations = cooperationRepository.findByRetinueId(retinueId);
+    public List<CooperationDto> getCatalog(Long retinueId, boolean inRange) {
+        List<CooperationEntity> cooperations;
+        if (inRange) {
+            cooperations = cooperationRepository.findByRetinueIdAndInRange(retinueId);
+        } else {
+            cooperations = cooperationRepository.findByRetinueIdAndOutRange(retinueId);
+        }
         List<CooperationDto> dtos = new ArrayList<>();
         cooperations.forEach(cooperation -> dtos.add(objectMapper.convertValue(cooperation, CooperationDto.class)));
         return dtos;

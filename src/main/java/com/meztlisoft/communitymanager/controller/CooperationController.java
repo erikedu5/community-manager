@@ -37,10 +37,10 @@ public class CooperationController {
         return ResponseEntity.ok(cooperationService.getAll(cooperationFilters, retinueId));
     }
 
-    @GetMapping("/catalog")
-    public ResponseEntity<List<CooperationDto>> getCatalog(
+    @GetMapping("/catalog/{inRange}")
+    public ResponseEntity<List<CooperationDto>> getCatalog(@PathVariable(name = "inRange") final boolean inRange,
             @RequestHeader(value = "retinueId") final Long retinueId) {
-        return ResponseEntity.ok(cooperationService.getCatalog(retinueId));
+        return ResponseEntity.ok(cooperationService.getCatalog(retinueId, inRange));
     }
 
     @GetMapping("/{id}")
