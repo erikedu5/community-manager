@@ -9,9 +9,13 @@ import com.meztlisoft.communitymanager.entity.specification.CooperationSpecifica
 import com.meztlisoft.communitymanager.repository.CooperationRepository;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import io.jsonwebtoken.Claims;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,14 +37,28 @@ public class CooperationServiceImpl implements CooperationService {
     @Override
     public CooperationDto create(CooperationDto cooperationDto, String token, Long retinueId) {
         Claims claims = jwtService.decodeToken(token);
+        boolean isNew = true;
         CooperationEntity cooperationEntity = objectMapper.convertValue(cooperationDto, CooperationEntity.class);
-        cooperationEntity.setRetinue(retinueRepository.findByIdAndActive(retinueId, true).orElseThrow());
-        cooperationEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
-        cooperationEntity.setCreationDate(LocalDateTime.now());
-        cooperationEntity.setByUnity(cooperationEntity.isByUnity());
-        cooperationEntity.setNotNativeCooperation(cooperationDto.getNotNativeCooperation());
-        cooperationEntity.setBaseCooperation(cooperationDto.getBaseCooperation());
-        cooperationEntity.setActive(true);
+        if (Objects.nonNull(cooperationDto.getId())) {
+            CooperationEntity cooperationEntitySaved = cooperationRepository.findById(cooperationEntity.getId()).orElseThrow();
+            if (cooperationEntitySaved.getLimitDate().isBefore(LocalDate.now())) {
+                isNew = false;
+                cooperationEntity = cooperationEntitySaved;
+                cooperationEntity.setLimitDate(cooperationDto.getLimitDate());
+            }
+        }
+
+        if (isNew) {
+            cooperationEntity.setId(cooperationDto.getId());
+            cooperationEntity.setRetinue(retinueRepository.findByIdAndActive(retinueId, true).orElseThrow());
+            cooperationEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
+            cooperationEntity.setCreationDate(LocalDateTime.now());
+            cooperationEntity.setByUnity(cooperationEntity.isByUnity());
+            cooperationEntity.setNotNativeCooperation(cooperationDto.getNotNativeCooperation());
+            cooperationEntity.setBaseCooperation(cooperationDto.getBaseCooperation());
+            cooperationEntity.setActive(true);
+        }
+
         CooperationEntity saved = cooperationRepository.save(cooperationEntity);
         CooperationDto savedDto = objectMapper.convertValue(saved, CooperationDto.class);
         paymentService.createInitialPaymentsAssociated(cooperationEntity);
@@ -57,6 +75,8 @@ public class CooperationServiceImpl implements CooperationService {
         cooperationEntities.stream().forEach(cooperation -> {
             CooperationDto dto = objectMapper.convertValue(cooperation, CooperationDto.class);
             dto.setRetinueName(cooperation.getRetinue().getName());
+            dto.setEditable(cooperation.getStartDate().isAfter(LocalDate.now()) || cooperation.getLimitDate().isBefore(LocalDate.now()));
+            dto.setComplete(cooperation.getLimitDate().isBefore(LocalDate.now()));
             dtos.add(dto);
         });
 

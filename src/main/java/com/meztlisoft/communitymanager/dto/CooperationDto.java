@@ -14,4 +14,6 @@ public class CooperationDto {
     private Long baseCooperation;
     private Long notNativeCooperation;
     private boolean byUnity;
+    private boolean editable;
+    private boolean isComplete;
 }
