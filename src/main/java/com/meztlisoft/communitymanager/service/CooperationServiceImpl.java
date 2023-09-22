@@ -61,7 +61,7 @@ public class CooperationServiceImpl implements CooperationService {
 
         CooperationEntity saved = cooperationRepository.save(cooperationEntity);
         CooperationDto savedDto = objectMapper.convertValue(saved, CooperationDto.class);
-        paymentService.createInitialPaymentsAssociated(cooperationEntity);
+        paymentService.verifyAssociated(cooperationEntity);
         return savedDto;
     }
 

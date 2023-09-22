@@ -97,16 +97,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void createInitialPaymentsAssociated(CooperationEntity cooperation) {
-        List<AssociatedEntity> associatedEntities = associationRepository.findAllByRetinueId(cooperation.getRetinue().getId());
-        this.saveAssociateds(associatedEntities, cooperation);
-    }
-
     public void verifyAssociated(CooperationEntity cooperation) {
         List<PaymentEntity> paymentEntities = paymentRepository.findAllByCooperationId(cooperation.getId());
         List<Long> ids = new ArrayList<>();
         paymentEntities.forEach(payment -> ids.add(payment.getAssociated().getId()));
-        List<AssociatedEntity> associatedEntities = associationRepository.findNotIn(ids, cooperation.getRetinue().getId());
+        List<AssociatedEntity> associatedEntities;
+        if (ids.isEmpty()) {
+            associatedEntities = associationRepository.findAllByRetinueIdAAndActiveTrue(cooperation.getRetinue().getId());
+        } else {
+            associatedEntities = associationRepository.findNotIn(ids, cooperation.getRetinue().getId());
+        }
         this.saveAssociateds(associatedEntities, cooperation);
     }
 
@@ -114,14 +114,19 @@ public class PaymentServiceImpl implements PaymentService {
         List<PaymentEntity> payments = new ArrayList<>();
         associatedEntities.forEach(associated -> {
             Period period = associated.getCitizen().getBirthday().until(LocalDate.now());
-            int years = period.getYears();
-            if (years >= 18 || associated.getCitizen().isMarried()) {
-                PaymentEntity payment = new PaymentEntity();
-                payment.setPayment(0L);
+            if (period.getYears() >= 18 || associated.getCitizen().isMarried()) {
+                PaymentEntity payment = paymentRepository
+                        .findByCitizenIdAAndCooperationId(associated.getCitizen().getId(), cooperation.getId())
+                        .orElse(new PaymentEntity());
+                payment.setPayment(Objects.isNull(payment.getPayment()) ? 0L: payment.getPayment());
                 payment.setAssociated(associated);
                 payment.setCooperation(cooperation);
                 payment.setPaymentDate(LocalDateTime.now());
-                payments.add(payment);
+                if (Objects.isNull(payment.getId())) {
+                    payments.add(payment);
+                } else {
+                    paymentRepository.save(payment);
+                }
             }
         });
         paymentRepository.saveAll(payments);

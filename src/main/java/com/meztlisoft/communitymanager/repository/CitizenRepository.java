@@ -17,4 +17,7 @@ public interface CitizenRepository extends JpaRepository<CitizenEntity, Long>, J
 
     @Query("FROM CitizenEntity c WHERE c.id > 0 and c.active = :active")
     Page<CitizenEntity> findAllActive(boolean active, Pageable paging);
+
+    @Query("FROM CitizenEntity c WHERE  LOWER(c.name) like :citizenName")
+    Optional<CitizenEntity> findLikeName(String citizenName);
 }

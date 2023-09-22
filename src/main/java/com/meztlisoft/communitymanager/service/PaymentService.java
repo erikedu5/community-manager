@@ -9,9 +9,10 @@ import org.springframework.data.domain.Page;
 import java.io.File;
 
 public interface PaymentService {
-    void createInitialPaymentsAssociated(CooperationEntity cooperation);
 
     Page<PaymentDto> getPaymentInfo(long cooperationId, PaymentFilters paymentFilters);
+
+    void verifyAssociated(CooperationEntity cooperation);
 
     ActionStatusResponse addPayment(AddPaymentDto addPaymentDto, String token);
 
