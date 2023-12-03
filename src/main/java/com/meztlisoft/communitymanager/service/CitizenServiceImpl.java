@@ -52,13 +52,13 @@ public class CitizenServiceImpl implements CitizenService {
 
     @Override
     public Page<CitizenDto> getAll(CitizenFilters citizenFilters, Long retinueId) {
-        Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize());
-        List<CitizenDto> dtos = new ArrayList<>();
+       List<CitizenDto> dtos = new ArrayList<>();
         Page<CitizenEntity> citizens;
         Page<AssociatedEntity> associated;
         Pageable pageable;
         long totalElements;
         if (!retinueId.equals(0L)) {
+            Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize(), Sort.by("citizen.curp"));
             Specification<AssociatedEntity> specification = AssociationSpecification.getFilteredCitizen(citizenFilters, retinueId);
             associated = associationRepository.findAll(specification, paging);
             pageable = associated.getPageable();
@@ -68,6 +68,7 @@ public class CitizenServiceImpl implements CitizenService {
             }
         } else {
             Specification<CitizenEntity> specification = CitizenSpecification.getFilteredCitizen(citizenFilters);
+            Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize(), Sort.by("curp"));
             citizens = citizenRepository.findAll(specification, paging);
             pageable = citizens.getPageable();
             totalElements = citizens.getTotalElements();

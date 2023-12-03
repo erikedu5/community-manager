@@ -41,10 +41,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -65,7 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Page<PaymentDto> getPaymentInfo(long cooperationId, PaymentFilters paymentFilters) {
         this.verifyAssociated(cooperationRepository.findById(cooperationId).orElseThrow());
-        Pageable paging = PageRequest.of(paymentFilters.getPage(), paymentFilters.getSize());
+        Pageable paging = PageRequest.of(paymentFilters.getPage(), paymentFilters.getSize(), Sort.by("associated.citizen.curp"));
         Specification<PaymentEntity> paymentSpecification = PaymentSpecification.getFilteredPayment(paymentFilters, cooperationId);
         Page<PaymentEntity> payments = paymentRepository.findAll(paymentSpecification, paging);
         List<PaymentDto> paymentDtos = new ArrayList<>();

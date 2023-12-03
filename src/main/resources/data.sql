@@ -18,6 +18,10 @@ INSERT INTO public."role"
 (id, activo, nombre)
 VALUES(4, true, 'Vocal');
 
+INSERT INTO public."role"
+(id, activo, nombre)
+VALUES(5, true, 'SuperAdmin');
+
 INSERT INTO public.beneficio
 (id, activo, nombre)
 VALUES(1, true, 'Accion');
@@ -44,4 +48,4 @@ VALUES(0, true, null, now(), 'Administrador', null, null);
 
 INSERT INTO public.administradores
 (id, activo, fecha_actualizacion, fecha_creacion, role_id, usuario_editor, ciudadano_id, comitiva_id)
-VALUES(0, true, null, now(), 1, null, 0, 0);
+VALUES(0, true, null, now(), 5, null, 0, 0);

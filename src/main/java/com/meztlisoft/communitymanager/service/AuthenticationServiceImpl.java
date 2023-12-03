@@ -2,16 +2,15 @@ package com.meztlisoft.communitymanager.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meztlisoft.communitymanager.dto.*;
+import com.meztlisoft.communitymanager.entity.AdministratorEntity;
 import com.meztlisoft.communitymanager.entity.UserEntity;
 import com.meztlisoft.communitymanager.repository.AdministratorRepository;
 import com.meztlisoft.communitymanager.repository.CitizenRepository;
 import com.meztlisoft.communitymanager.repository.RetinueRepository;
 import com.meztlisoft.communitymanager.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +56,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 administratorRepository.findByCitizenAndActive(citizen.getCitizen(), true)
                         .forEach(ret -> retinues.add(objectMapper.convertValue(ret.getRetinue(), RetinueDto.class)));
             }
-            String jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId(), retinues);
+            Optional<AdministratorEntity> admin = administratorRepository.findByCitizenAndActive(citizen.getCitizen(), true).stream().findFirst();
+            String jwt = jwtService.generateToken(citizen, citizen.getCitizen().getId(), retinues, admin);
             return JwtAuthenticationResponse.builder().token(jwt).build();
         } catch (Exception e) {
             log.info(e.getMessage());
