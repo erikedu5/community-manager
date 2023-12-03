@@ -136,12 +136,17 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             Claims claims = jwtService.decodeToken(token);
             long citizenId = Long.parseLong(claims.get("ciudadano_id").toString());
-            AdministratorEntity admin = administratorRepository.findByCitizenIdAndActive(citizenId, true);
             CooperationEntity cooperation = cooperationRepository.findById(addPaymentDto.getCooperationId()).orElseThrow();
+            AdministratorEntity admin;
+            if (citizenId != 0) {
+                admin = administratorRepository.findRoleByCitizenIdAndRetinueId(citizenId, true, cooperation.getRetinue().getId()).orElseThrow();
+            } else {
+                admin = administratorRepository.findById(citizenId).orElseThrow();
+            }
             AssociatedEntity association = associationRepository.findById(addPaymentDto.getAssociatedId()).orElseThrow();
 
             Long cooperationBase = cooperation.getBaseCooperation();
-            if (!admin.getCitizen().isNative()) {
+            if (!association.getCitizen().isNative()) {
                 cooperationBase = cooperation.getNotNativeCooperation();
             }
 

@@ -1,9 +1,9 @@
 package com.meztlisoft.communitymanager.config;
 
-
 import com.meztlisoft.communitymanager.dto.ErrorMessage;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -21,16 +21,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
-
 @ControllerAdvice
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ResponseBody
+@Log4j2
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
 
     @ExceptionHandler(value = { HttpClientErrorException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorMessage> handleHttpClientErrorException(HttpClientErrorException ex, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorMessage error = new ErrorMessage();
         error.setStatusCode(ex.getStatusCode().value());
         error.setTimestamp(LocalDateTime.now());
@@ -41,6 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
     @ExceptionHandler(value = { HttpServerErrorException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorMessage> handleHttpServerErrorException(HttpServerErrorException ex, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorMessage error = new ErrorMessage();
         error.setStatusCode(ex.getStatusCode().value());
         error.setTimestamp(LocalDateTime.now());
@@ -51,6 +53,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
     @ExceptionHandler(value = { ResponseStatusException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorMessage> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorMessage error = new ErrorMessage();
         error.setStatusCode(ex.getStatusCode().value());
         error.setTimestamp(LocalDateTime.now());
@@ -61,6 +64,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
     @ExceptionHandler(value = { RuntimeException.class })
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<ErrorMessage> handleResponseStatusException(RuntimeException ex, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorMessage error = new ErrorMessage();
         error.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setTimestamp(LocalDateTime.now());
@@ -70,6 +74,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
 
     @ExceptionHandler(value = { ExpiredJwtException.class })
     protected ResponseEntity<ErrorMessage> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorMessage error = new ErrorMessage();
         error.setStatusCode(HttpStatus.UNAUTHORIZED.value());
         error.setTimestamp(LocalDateTime.now());
@@ -79,6 +84,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler  {
 
     @ExceptionHandler(value = { ConstraintViolationException.class })
     protected ResponseEntity<ErrorMessage> handleSqlException(ConstraintViolationException ex, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorMessage error = new ErrorMessage();
         error.setStatusCode(HttpStatus.UNAUTHORIZED.value());
         error.setTimestamp(LocalDateTime.now());

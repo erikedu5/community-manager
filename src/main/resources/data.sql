@@ -44,7 +44,7 @@ VALUES(0, true, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uhe
 
 INSERT INTO public.comitivas
 (id, activo, fecha_actualizacion, fecha_creacion, nombre, usuario_editor, unidad_beneficio_id)
-VALUES(0, true, null, now(), 'Administrador', null, null);
+VALUES(0, true, null, now(), 'Administrador', null, 1);
 
 INSERT INTO public.administradores
 (id, activo, fecha_actualizacion, fecha_creacion, role_id, usuario_editor, ciudadano_id, comitiva_id)

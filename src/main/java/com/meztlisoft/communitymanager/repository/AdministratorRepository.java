@@ -25,4 +25,7 @@ public interface AdministratorRepository extends JpaRepository<AdministratorEnti
 
     @Query("FROM AdministratorEntity a WHERE a.citizen.id = :citizenId and a.active= :active")
     AdministratorEntity findByCitizenIdAndActive(long citizenId, boolean active);
+
+    @Query("FROM AdministratorEntity a where a.citizen.id = :citizenId and a.retinue.id = :retinueId and a.active= :active")
+    Optional<AdministratorEntity> findRoleByCitizenIdAndRetinueId(Long citizenId, boolean active, Long retinueId);
 }
