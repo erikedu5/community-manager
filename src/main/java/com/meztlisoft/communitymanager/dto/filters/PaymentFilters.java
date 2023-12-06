@@ -9,6 +9,7 @@ public class PaymentFilters {
     private int page;
     private String citizenName;
     private String citizenDescription;
+    private String citizenCurp;
     private Long credit;
     private Boolean complete = null;
     private Boolean volunteer = null;

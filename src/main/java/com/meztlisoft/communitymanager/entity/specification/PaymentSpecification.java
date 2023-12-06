@@ -32,6 +32,12 @@ public class PaymentSpecification {
                         "%" + params.getCitizenName().toUpperCase() + "%"));
             }
 
+
+            if (Objects.nonNull(params.getCitizenCurp())) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("associated").get("citizen").get("curp")),
+                         params.getCitizenCurp().toUpperCase()));
+            }
+
             if (Objects.nonNull(params.getCitizenDescription())) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("associated").get("citizen").get("description")),
                         "%" + params.getCitizenDescription().toUpperCase() + "%"));
