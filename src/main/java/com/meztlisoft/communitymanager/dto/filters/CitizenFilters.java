@@ -14,5 +14,9 @@ public class CitizenFilters {
     private RangeDates rangeBirthdays;
     private int page;
     private int size;
+    private boolean onlyAdmins;
 
+    public CitizenFilters() {
+        this.onlyAdmins = false;
+    }
 }

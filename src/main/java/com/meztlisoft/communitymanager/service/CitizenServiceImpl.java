@@ -43,7 +43,6 @@ public class CitizenServiceImpl implements CitizenService {
     public CitizenDto create(CitizenDto citizen, String token) {
         Claims claims = jwtService.decodeToken(token);
         CitizenEntity citizenEntity = objectMapper.convertValue(citizen, CitizenEntity.class);
-        citizenEntity.setActive(true);
         citizenEntity.setCreationDate(LocalDateTime.now());
         citizenEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
         CitizenEntity citizenEntitySaved = citizenRepository.save(citizenEntity);
@@ -81,7 +80,7 @@ public class CitizenServiceImpl implements CitizenService {
 
     @Override
     public CitizenDto getById(long id) {
-        CitizenEntity citizenEntity = citizenRepository.findByIdAndActive(id, true).orElse(new CitizenEntity());
+        CitizenEntity citizenEntity = citizenRepository.findById(id).orElse(new CitizenEntity());
         return objectMapper.convertValue(citizenEntity, CitizenDto.class);
     }
 
@@ -90,7 +89,7 @@ public class CitizenServiceImpl implements CitizenService {
         ActionStatusResponse actionStatusResponse = new ActionStatusResponse();
         Claims claims = jwtService.decodeToken(token);
         try {
-            CitizenEntity citizen = citizenRepository.findByIdAndActive(id, true).orElseThrow();
+            CitizenEntity citizen = citizenRepository.findById(id).orElseThrow();
 
             if (StringUtils.isNotBlank(citizenDto.getName())) {
                 citizen.setName(citizenDto.getName());
@@ -114,10 +113,18 @@ public class CitizenServiceImpl implements CitizenService {
 
             citizen.setMarried(citizenDto.isMarried());
             citizen.setNative(citizenDto.isNative());
+            citizen.setActive(citizenDto.isActive());
 
             citizen.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
             citizen.setUpdateDate(LocalDateTime.now());
             CitizenEntity saved = citizenRepository.save(citizen);
+
+            if (!citizen.getActive()) {
+                associationRepository.findAllByCitizenId(citizen.getId()).forEach(associatedEntity -> {
+                    associatedEntity.setActive(false);
+                    associationRepository.save(associatedEntity);
+                });
+            }
 
             actionStatusResponse.setId(saved.getId());
             actionStatusResponse.setStatus(HttpStatus.OK);

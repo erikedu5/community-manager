@@ -59,10 +59,10 @@ public class AssociationServiceImpl implements  AssociationService {
                 }
             }
             associationRepository.saveAll(associatedEntities);
-            if (admins.size() > 0) {
+            if (!admins.isEmpty()) {
                 administratorRepository.saveAll(admins);
             }
-            if (errors.size() > 0) {
+            if (!errors.isEmpty()) {
                 actionStatusResponse.setStatus(HttpStatus.PARTIAL_CONTENT);
                 actionStatusResponse.setDescription("Associacion creada con errores");
             } else {
@@ -98,10 +98,10 @@ public class AssociationServiceImpl implements  AssociationService {
                 }
             }
             associationRepository.saveAll(associatedEntities);
-            if (admins.size() > 0) {
+            if (!admins.isEmpty()) {
                 administratorRepository.saveAll(admins);
             }
-            if (errors.size() > 0) {
+            if (!errors.isEmpty()) {
                 actionStatusResponse.setStatus(HttpStatus.PARTIAL_CONTENT);
                 actionStatusResponse.setDescription("Associacion creada con errores");
             } else {
@@ -162,13 +162,13 @@ public class AssociationServiceImpl implements  AssociationService {
         associatedEntity.setRetinue(retinue);
         associatedEntity.setBenefit(association.getBenefit());
         associatedEntity.setUserEditor(userEditor);
-        if (Objects.isNull(associatedEntity.getId())) {
+        if (Objects.isNull(associatedEntity.getId()) && associatedEntity.getActive()) {
             associatedEntities.add(associatedEntity);
-        } else {
+        } else if (Objects.nonNull(associatedEntity.getId())) {
             associatedEntity.setUpdateDate(LocalDateTime.now());
             associationRepository.save(associatedEntity);
         }
-        if (Objects.nonNull(association.getRoleId())) {
+        if (Objects.nonNull(association.getRoleId()) && !association.getRoleId().equals(0L)) {
             AdministratorEntity administrator = administratorRepository
                     .findRoleByCitizenIdAndRetinueId(citizen.getId(), retinue.getId()).orElse(new AdministratorEntity());
             administrator.setRole(roleRepository.findById(association.getRoleId()).orElseThrow());

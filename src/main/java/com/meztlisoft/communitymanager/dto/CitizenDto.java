@@ -18,4 +18,5 @@ public class CitizenDto {
     private LocalDate birthday;
     private boolean isNative;
     private boolean isMarried;
+    private boolean active;
 }
