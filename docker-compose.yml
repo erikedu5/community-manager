@@ -24,7 +24,7 @@ services:
       SPRING_DATASOURCE_USERNAME: comunity_user
       SPRING_DATASOURCE_PASSWORD: comunity_password
 
-  comunnity-app:
+  community-app:
     image: community-app
     container_name: community-app
     build:
