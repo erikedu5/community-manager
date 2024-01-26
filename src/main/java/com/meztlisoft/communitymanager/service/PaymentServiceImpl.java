@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final JwtService jwtService;
     private final CooperationRepository cooperationRepository;
     private final CitizenRepository citizenRepository;
+
+    @Value("${files.path.community}")
+    private String pathCommunity;
 
     @Override
     public Page<PaymentDto> getPaymentInfo(long cooperationId, PaymentFilters paymentFilters) {
@@ -258,7 +262,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         JasperPrint empReport = JasperFillManager.fillReport(
                 JasperCompileManager.compileReport(
-                        ResourceUtils.getFile("classpath:reports/recibo.jrxml").getAbsolutePath()),
+                        ResourceUtils.getFile(pathCommunity + "recibo.jrxml").getAbsolutePath()),
                 empParams,
                 new JREmptyDataSource());
 
@@ -288,7 +292,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             JasperPrint empReport = JasperFillManager.fillReport(
                     JasperCompileManager.compileReport(
-                            ResourceUtils.getFile("classpath:reports/deudores.jrxml").getAbsolutePath()),
+                            ResourceUtils.getFile(pathCommunity + "deudores.jrxml").getAbsolutePath()),
                     empParams,
                     new JREmptyDataSource());
 

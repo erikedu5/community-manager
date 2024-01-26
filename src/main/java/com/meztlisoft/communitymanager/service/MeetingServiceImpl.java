@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,9 @@ public class MeetingServiceImpl implements MeetingService {
     private final RetinueRepository retinueRepository;
     private final AttendanceMeetingRepository attendanceMeetingRepository;
     private final AssociationRepository associationRepository;
+
+    @Value("${files.path.community}")
+    private String pathCommunity;
 
     @Override
     public MeetingResponse findById(long id) {
@@ -97,7 +101,7 @@ public class MeetingServiceImpl implements MeetingService {
 
             JasperPrint empReport = JasperFillManager.fillReport(
                     JasperCompileManager.compileReport(
-                            ResourceUtils.getFile("classpath:reports/asistencia.jrxml").getAbsolutePath()),
+                            ResourceUtils.getFile(pathCommunity + "asistencia.jrxml").getAbsolutePath()),
                     empParams,
                     new JREmptyDataSource());
 

@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -47,6 +48,9 @@ public class EntryServiceImpl implements EntryService {
     private final JwtService jwtService;
     private final RetinueRepository retinueRepository;
     private final ObjectMapper objectMapper;
+
+    @Value("${files.path.community}")
+    private String pathCommunity;
 
     @Override
     public Page<EntryDto> findAll(EntryFilters entryFilters, Long retinueId) {
@@ -128,7 +132,7 @@ public class EntryServiceImpl implements EntryService {
 
             JasperPrint empReport = JasperFillManager.fillReport(
                     JasperCompileManager.compileReport(
-                            ResourceUtils.getFile("classpath:reports/corteCaja.jrxml").getAbsolutePath()),
+                            ResourceUtils.getFile(pathCommunity + "corteCaja.jrxml").getAbsolutePath()),
                     empParams,
                     new JREmptyDataSource());
 
