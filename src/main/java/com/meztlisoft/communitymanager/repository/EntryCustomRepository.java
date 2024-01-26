@@ -8,11 +8,13 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
+@Log4j2
 public class EntryCustomRepository {
 
     private final EntityManager em;
@@ -36,7 +38,11 @@ public class EntryCustomRepository {
 
         if ( predicate != null )
             select.where(predicate);
-
-        return em.createQuery(select).getSingleResult();
+        try {
+            return em.createQuery(select).getSingleResult();
+        } catch (Exception e) {
+            log.warn("error to get sumary " + e.getMessage());
+        }
+        return 0L;
     }
 }
