@@ -1,7 +1,8 @@
 package com.meztlisoft.communitymanager.dto;
 
 import java.time.LocalDate;
-import lombok.Data;
+
+import lombok.*;
 
 @Data
 public class CooperationDto {
@@ -14,6 +15,7 @@ public class CooperationDto {
     private Long baseCooperation;
     private Long notNativeCooperation;
     private boolean byUnity;
+    private boolean elderly;
     private boolean editable;
     private boolean isComplete;
 }

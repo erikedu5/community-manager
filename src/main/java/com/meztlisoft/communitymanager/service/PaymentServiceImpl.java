@@ -115,8 +115,7 @@ public class PaymentServiceImpl implements PaymentService {
     private void saveAssociateds(List<AssociatedEntity> associatedEntities, CooperationEntity cooperation) {
         List<PaymentEntity> payments = new ArrayList<>();
         associatedEntities.forEach(associated -> {
-            Period period = associated.getCitizen().getBirthday().until(LocalDate.now());
-            if (period.getYears() >= 18 || associated.getCitizen().isMarried()) {
+            if (associated.getCitizen().getActive()) {
                 PaymentEntity payment = paymentRepository
                         .findByCitizenIdAAndCooperationId(associated.getCitizen().getId(), cooperation.getId())
                         .orElse(new PaymentEntity());
@@ -277,7 +276,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public File generateReport(Long cooperationId) {
         try {
+            List<PaymentEntity> paymentsFiltered = new ArrayList<>();
             List<PaymentEntity> payments = paymentRepository.findAllByCooperationIdIncomplete(cooperationId);
+            payments.forEach(paymentEntity -> {
+                Period period = paymentEntity.getAssociated().getCitizen().getBirthday().until(LocalDate.now());
+                if (!paymentEntity.getCooperation().isElderly() && period.getYears() <= 65) {
+                    paymentsFiltered.add(paymentEntity);
+                } else if (paymentEntity.getCooperation().isElderly()){
+                    paymentsFiltered.add(paymentEntity);
+                }
+            });
             CooperationEntity cooperation = cooperationRepository.findById(cooperationId).orElseThrow();
 
             Map<String, Object> empParams = new HashMap<>();
@@ -286,7 +294,7 @@ public class PaymentServiceImpl implements PaymentService {
             empParams.put("retinueName", cooperation.getRetinue().getName());
             empParams.put("cooperationConcept", cooperation.getConcept());
 
-            JRBeanCollectionDataSource citizens = new JRBeanCollectionDataSource(this.parseDebtors(payments));
+            JRBeanCollectionDataSource citizens = new JRBeanCollectionDataSource(this.parseDebtors(paymentsFiltered));
 
             empParams.put("citizens", citizens);
 

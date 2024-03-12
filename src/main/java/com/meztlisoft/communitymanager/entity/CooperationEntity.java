@@ -43,6 +43,9 @@ public class CooperationEntity {
     @Column(name = "cooperacion_por_beneficio")
     private boolean byUnity;
 
+    @Column(name = "aplica_adulto_mayor")
+    private boolean elderly;
+
     @Column(name = "fecha_creacion")
     private LocalDateTime creationDate;
 
@@ -146,5 +149,13 @@ public class CooperationEntity {
 
     public void setNotNativeCooperation(Long notNativeCooperation) {
         this.notNativeCooperation = notNativeCooperation;
+    }
+
+    public boolean isElderly() {
+        return elderly;
+    }
+
+    public void setElderly(boolean elderly) {
+        this.elderly = elderly;
     }
 }
