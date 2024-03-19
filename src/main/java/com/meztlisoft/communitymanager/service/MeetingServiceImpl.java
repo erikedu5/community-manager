@@ -140,10 +140,29 @@ public class MeetingServiceImpl implements MeetingService {
         return dto;
     }
 
+    @Override
+    public ActionStatusResponse addNotes(Long id, MeetingDto meetingDto) {
+        ActionStatusResponse response = new ActionStatusResponse();
+        try {
+            MeetingEntity meet = meetingRepository.findById(id).orElseThrow();
+            meet.setNotes(meetingDto.getNotes());
+            meetingRepository.save(meet);
+            response.setId(meet.getId());
+            response.setStatus(HttpStatus.OK);
+            response.setDescription("Reunión actualizada correctamente");
+        } catch (Exception exception) {
+            Map<HttpStatus, String> errors = new HashMap<>();
+            errors.put(HttpStatus.BAD_GATEWAY, exception.getMessage());
+            response.setErrors(errors);
+        }
+        return response;
+    }
+
     private MeetingResponse convertMeetingToMeetingResponse(MeetingEntity meeting) {
         MeetingResponse response = new MeetingResponse();
         response.setConcept(meeting.getDescription());
         response.setMeetingDate(meeting.getMeetingDate());
+        response.setNotes(meeting.getNotes());
         response.setId(meeting.getId());
         List<MeetingAttendanceDto> attendanceDtos = new ArrayList<>();
         List<AttendanceMeetingEntity> attendancesMeeting = attendanceMeetingRepository.findByMeetingId(meeting.getId());

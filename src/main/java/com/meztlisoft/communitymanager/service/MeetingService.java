@@ -19,4 +19,5 @@ public interface MeetingService {
 
     List<MeetingResponse> getAll(Long retinueId);
 
+    ActionStatusResponse addNotes(Long id, MeetingDto notes);
 }

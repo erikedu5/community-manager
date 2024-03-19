@@ -10,6 +10,7 @@ public class MeetingResponse {
     private String concept;
     private LocalDateTime meetingDate;
     private Long id;
+    private String notes;
     private List<MeetingAttendanceDto> attendance;
 
 }

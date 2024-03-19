@@ -34,6 +34,9 @@ public class MeetingEntity {
     @Lob
     private String description;
 
+    @Column
+    private String notes;
+
     @Column(name = "fecha_junta")
     private LocalDateTime meetingDate;
 
@@ -68,5 +71,13 @@ public class MeetingEntity {
 
     public void setMeetingDate(LocalDateTime meetingDate) {
         this.meetingDate = meetingDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

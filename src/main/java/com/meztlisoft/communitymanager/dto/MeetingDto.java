@@ -10,4 +10,6 @@ public class MeetingDto {
 
     private LocalDateTime dateMeeting;
 
+    private String notes;
+
 }
