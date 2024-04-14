@@ -34,13 +34,13 @@
 			<![CDATA[]]>
 		</queryString>
 		<field name="id" class="java.lang.Long"/>
-		<field name="name"/>
-		<field name="description"/>
-		<field name="check"/>
+		<field name="name" class="java.lang.String"/>
+		<field name="description" class="java.lang.String"/>
+		<field name="check" class="java.lang.String"/>
 	</subDataset>
-	<parameter name="meetingDate"/>
-	<parameter name="retinueName"/>
-	<parameter name="meetConcept"/>
+	<parameter name="meetingDate" class="java.lang.String"/>
+	<parameter name="retinueName" class="java.lang.String"/>
+	<parameter name="meetConcept" class="java.lang.String"/>
 	<parameter name="attendances" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<queryString>
 		<![CDATA[]]>
@@ -48,7 +48,7 @@
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<pageHeader>
+	<summary>
 		<band height="371">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
 			<textField>
@@ -298,8 +298,5 @@
 				<text><![CDATA[Fecha de Junta]]></text>
 			</staticText>
 		</band>
-	</pageHeader>
-	<summary>
-		<band height="225" splitType="Stretch"/>
 	</summary>
 </jasperReport>

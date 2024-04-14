@@ -50,6 +50,8 @@
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
+	</pageHeader>
+	<summary>
 		<band height="371">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
 			<textField>
@@ -326,8 +328,5 @@
 				<text><![CDATA[Fecha de reporte]]></text>
 			</staticText>
 		</band>
-	</pageHeader>
-	<summary>
-		<band height="225" splitType="Stretch"/>
 	</summary>
 </jasperReport>
