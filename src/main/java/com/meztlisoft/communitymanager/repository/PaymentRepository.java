@@ -29,8 +29,8 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long>, J
     @Query("FROM PaymentEntity p WHERE p.cooperation.id= :cooperationId and p.complete = false ORDER BY p.associated.citizen.curp asc")
     List<PaymentEntity> findAllByCooperationIdIncomplete(Long cooperationId);
 
-    @Query("FROM PaymentEntity p WHERE p.associated.citizen.id =:citizenId")
-    Page<PaymentEntity> findAllByCitizenId(Long citizenId, Pageable page);
+    @Query("FROM PaymentEntity p WHERE p.associated.citizen.id  in :citizenId")
+    Page<PaymentEntity> findAllByCitizenId(List<Long> citizenId, Pageable page);
 
 
     @Query("FROM PaymentEntity p WHERE p.associated.citizen.id =:citizenId and p.cooperation.id =:cooperationId")

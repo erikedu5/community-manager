@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,5 +20,5 @@ public interface CitizenRepository extends JpaRepository<CitizenEntity, Long>, J
     Page<CitizenEntity> findAllActive(boolean active, Pageable paging);
 
     @Query("FROM CitizenEntity c WHERE  LOWER(c.name) like :citizenName")
-    Optional<CitizenEntity> findLikeName(String citizenName);
+    List<CitizenEntity> findLikeName(String citizenName);
 }
