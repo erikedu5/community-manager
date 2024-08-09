@@ -35,6 +35,7 @@ public class MeetingEntity {
     private String description;
 
     @Column
+    @Lob
     private String notes;
 
     @Column(name = "fecha_junta")
