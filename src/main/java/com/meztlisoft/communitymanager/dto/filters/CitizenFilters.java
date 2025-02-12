@@ -15,6 +15,7 @@ public class CitizenFilters {
     private int page;
     private int size;
     private boolean onlyAdmins;
+    private boolean getAll;
 
     public CitizenFilters() {
         this.onlyAdmins = false;

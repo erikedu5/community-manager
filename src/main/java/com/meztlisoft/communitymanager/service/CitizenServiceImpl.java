@@ -56,7 +56,7 @@ public class CitizenServiceImpl implements CitizenService {
         Page<AssociatedEntity> associated;
         Pageable pageable;
         long totalElements;
-        if (!retinueId.equals(0L)) {
+        if (!citizenFilters.isGetAll() && !retinueId.equals(0L)) {
             Pageable paging = PageRequest.of(citizenFilters.getPage(), citizenFilters.getSize(), Sort.by("citizen.curp"));
             Specification<AssociatedEntity> specification = AssociationSpecification.getFilteredCitizen(citizenFilters, retinueId);
             associated = associationRepository.findAll(specification, paging);

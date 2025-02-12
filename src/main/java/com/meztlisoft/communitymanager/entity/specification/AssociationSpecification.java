@@ -16,31 +16,33 @@ public class AssociationSpecification {
         return (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (!retinueId.equals(0L)) {
-                predicates.add(criteriaBuilder.equal(root.get("retinue").get("id"), retinueId));
-            }
+            if (!params.isGetAll()) {
+                if (!retinueId.equals(0L)) {
+                    predicates.add(criteriaBuilder.equal(root.get("retinue").get("id"), retinueId));
+                }
 
-            if (StringUtils.isNoneBlank(params.getName())) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("citizen").get("name")), "%" + params.getName().toUpperCase()+ "%"));
-            }
+                if (StringUtils.isNoneBlank(params.getName())) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("citizen").get("name")), "%" + params.getName().toUpperCase()+ "%"));
+                }
 
-            if (StringUtils.isNoneBlank(params.getDescription())) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("citizen").get("description")), "%" + params.getDescription().toUpperCase() + "%" ));
-            }
+                if (StringUtils.isNoneBlank(params.getDescription())) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("citizen").get("description")), "%" + params.getDescription().toUpperCase() + "%" ));
+                }
 
-            if (StringUtils.isNoneBlank(params.getCurp())) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("citizen").get("curp")), "%" + params.getCurp().toUpperCase() + "%"));
-            }
+                if (StringUtils.isNoneBlank(params.getCurp())) {
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.upper(root.get("citizen").get("curp")), "%" + params.getCurp().toUpperCase() + "%"));
+                }
 
-            if (Objects.nonNull(params.getRangeBirthdays())
-                    && Objects.nonNull(params.getRangeBirthdays().getUpperLimit())
-                    && Objects.nonNull(params.getRangeBirthdays().getLowerLimit())) {
-                predicates.add(criteriaBuilder.between(root.get("citizen").get("birthday"),
-                        params.getRangeBirthdays().getUpperLimit(),
-                        params.getRangeBirthdays().getLowerLimit()));
-            }
+                if (Objects.nonNull(params.getRangeBirthdays())
+                        && Objects.nonNull(params.getRangeBirthdays().getUpperLimit())
+                        && Objects.nonNull(params.getRangeBirthdays().getLowerLimit())) {
+                    predicates.add(criteriaBuilder.between(root.get("citizen").get("birthday"),
+                            params.getRangeBirthdays().getUpperLimit(),
+                            params.getRangeBirthdays().getLowerLimit()));
+                }
 
-            predicates.add(criteriaBuilder.equal(root.get("active"), true));
+                predicates.add(criteriaBuilder.equal(root.get("active"), true));
+            }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
