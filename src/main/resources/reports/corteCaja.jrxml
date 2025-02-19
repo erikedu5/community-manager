@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="jasper_report_template" pageWidth="612" pageHeight="792" whenNoDataType="NoPages" columnWidth="532" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="888ed02e-45bb-47e9-a89e-330e9a0f3f19">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
@@ -34,22 +34,22 @@
 			<![CDATA[]]>
 		</queryString>
 		<field name="id" class="java.lang.Long"/>
-		<field name="concept"/>
+		<field name="concept" class="java.lang.String"/>
 		<field name="cost" class="java.lang.Long"/>
-		<field name="date"/>
-		<field name="isCooperation"/>
+		<field name="date" class="java.lang.String"/>
+		<field name="isCooperation" class="java.lang.String"/>
 	</subDataset>
 	<subDataset name="bills" uuid="602bf2a8-4f14-4b51-a1a0-6686bdcf578f">
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
 		<field name="id" class="java.lang.Long"/>
-		<field name="concept"/>
+		<field name="concept" class="java.lang.String"/>
 		<field name="cost" class="java.lang.Long"/>
-		<field name="date"/>
+		<field name="date" class="java.lang.String"/>
 	</subDataset>
-	<parameter name="date"/>
-	<parameter name="retinueName"/>
+	<parameter name="date" class="java.lang.String"/>
+	<parameter name="retinueName" class="java.lang.String"/>
 	<parameter name="totalEntries" class="java.lang.Long"/>
 	<parameter name="totalBills" class="java.lang.Long"/>
 	<parameter name="totalFinal" class="java.lang.Long"/>
@@ -68,7 +68,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[SISTEMA DE ADMINISRACIÓN COMUNAL]]></text>
+				<text><![CDATA[ASOCIACIÓN DE RIEGO "EL TAPÓN A.C."]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="-31" y="0" width="590" height="20" uuid="bc58ec23-996c-4d30-ad53-68e082524654"/>

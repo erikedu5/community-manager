@@ -43,6 +43,8 @@ public class CitizenServiceImpl implements CitizenService {
     public CitizenDto create(CitizenDto citizen, String token) {
         Claims claims = jwtService.decodeToken(token);
         CitizenEntity citizenEntity = objectMapper.convertValue(citizen, CitizenEntity.class);
+        citizenEntity.setCurp(citizenEntity.getName().toUpperCase() + "-" + citizenEntity.getCurp());
+        citizenEntity.setName(citizenEntity.getName().toUpperCase());
         citizenEntity.setCreationDate(LocalDateTime.now());
         citizenEntity.setUserEditor(Long.parseLong(claims.get("ciudadano_id").toString()));
         CitizenEntity citizenEntitySaved = citizenRepository.save(citizenEntity);

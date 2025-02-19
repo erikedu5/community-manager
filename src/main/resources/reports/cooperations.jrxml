@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="jasper_report_template" pageWidth="612" pageHeight="792" whenNoDataType="NoPages" columnWidth="532" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50" uuid="888ed02e-45bb-47e9-a89e-330e9a0f3f19">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
@@ -33,15 +33,15 @@
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
-		<field name="name"/>
-		<field name="description"/>
-		<field name="benefit"/>
+		<field name="name" class="java.lang.String"/>
+		<field name="description" class="java.lang.String"/>
+		<field name="benefit" class="java.lang.String"/>
 		<field name="abonado" class="java.lang.Long"/>
 		<field name="total" class="java.lang.Long"/>
 	</subDataset>
-	<parameter name="date"/>
-	<parameter name="retinueName"/>
-	<parameter name="cooperationConcept"/>
+	<parameter name="date" class="java.lang.String"/>
+	<parameter name="retinueName" class="java.lang.String"/>
+	<parameter name="cooperationConcept" class="java.lang.String"/>
 	<parameter name="citizens" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<queryString>
 		<![CDATA[]]>
@@ -49,8 +49,6 @@
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<pageHeader>
-	</pageHeader>
 	<summary>
 		<band height="371">
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
@@ -82,7 +80,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[SISTEMA DE ADMINISRACIÓN COMUNAL]]></text>
+				<text><![CDATA[ASOCIACIÓN DE RIEGO "EL TAPÓN A.C."]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="-31" y="0" width="590" height="20" uuid="bc58ec23-996c-4d30-ad53-68e082524654"/>

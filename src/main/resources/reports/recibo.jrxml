@@ -244,7 +244,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[SISTEMA DE ADMINISRACIÓN COMUNAL]]></text>
+				<text><![CDATA[ASOCIACIÓN DE RIEGO "EL TAPÓN A.C."]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="-31" y="-3" width="588" height="20" uuid="bc58ec23-996c-4d30-ad53-68e082524654"/>
@@ -268,7 +268,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[SISTEMA DE ADMINISRACIÓN COMUNAL]]></text>
+				<text><![CDATA[ASOCIACIÓN DE RIEGO "EL TAPÓN A.C."]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="336" y="334" width="180" height="20" uuid="d729796d-a68e-4067-9609-1ca5be813430">
@@ -297,7 +297,7 @@
 				<reportElement x="-10" y="354" width="529" height="7" forecolor="rgba(0, 0, 0, 0.0)" backcolor="#6366F1" uuid="0caddffc-d734-45f7-9dcc-bdd25ebb499b"/>
 			</rectangle>
 			<frame>
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="-17" y="367" width="550" height="228" uuid="4d0f4625-90f3-43c6-880f-e8b916971624"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="-17" y="367" width="550" height="241" uuid="4d0f4625-90f3-43c6-880f-e8b916971624"/>
 				<staticText>
 					<reportElement x="31" y="10" width="60" height="15" uuid="505a580f-188f-4a2c-b231-3ffa8eb6e115">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -458,10 +458,10 @@
 					<reportElement x="31" y="141" width="110" height="1" uuid="3d17d46d-4de8-4d03-9a36-a456e6f72be8"/>
 				</line>
 				<rectangle>
-					<reportElement mode="Transparent" x="170" y="160" width="170" height="68" forecolor="#000066" uuid="7a94fb8d-0853-49d3-8d10-a63111011cfa"/>
+					<reportElement mode="Transparent" x="170" y="170" width="170" height="68" forecolor="#000066" uuid="7a94fb8d-0853-49d3-8d10-a63111011cfa"/>
 				</rectangle>
 				<staticText>
-					<reportElement x="171" y="160" width="169" height="16" uuid="bc02145f-b3e4-43a1-8939-f08a07de72b3"/>
+					<reportElement x="171" y="170" width="169" height="16" uuid="bc02145f-b3e4-43a1-8939-f08a07de72b3"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
 					<text><![CDATA[Sello]]></text>
 				</staticText>

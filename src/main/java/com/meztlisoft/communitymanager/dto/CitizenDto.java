@@ -3,11 +3,9 @@ package com.meztlisoft.communitymanager.dto;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class CitizenDto {
 
     private Long id;
@@ -19,4 +17,9 @@ public class CitizenDto {
     private boolean isNative;
     private boolean isMarried;
     private boolean active;
+
+    public CitizenDto() {
+        this.isNative = true;
+        this.isMarried = true;
+    }
 }
