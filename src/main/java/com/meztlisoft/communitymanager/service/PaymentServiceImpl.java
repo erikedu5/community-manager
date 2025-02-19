@@ -312,6 +312,45 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    @Override
+    public File generateReportCooperations(Long cooperationId) {
+        try {
+            List<PaymentEntity> paymentsFiltered = new ArrayList<>();
+            List<PaymentEntity> payments = paymentRepository.findAllByCooperationId(cooperationId);
+            payments.forEach(paymentEntity -> {
+                Period period = paymentEntity.getAssociated().getCitizen().getBirthday().until(LocalDate.now());
+                if (!paymentEntity.getCooperation().isElderly() && period.getYears() <= 65) {
+                    paymentsFiltered.add(paymentEntity);
+                } else if (paymentEntity.getCooperation().isElderly()){
+                    paymentsFiltered.add(paymentEntity);
+                }
+            });
+            CooperationEntity cooperation = cooperationRepository.findById(cooperationId).orElseThrow();
+
+            Map<String, Object> empParams = new HashMap<>();
+            DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            empParams.put("date", LocalDate.now().format(formatters));
+            empParams.put("retinueName", cooperation.getRetinue().getName());
+            empParams.put("cooperationConcept", cooperation.getConcept());
+
+            JRBeanCollectionDataSource citizens = new JRBeanCollectionDataSource(this.parseDebtors(paymentsFiltered));
+
+            empParams.put("citizens", citizens);
+
+            JasperPrint empReport = JasperFillManager.fillReport(
+                    JasperCompileManager.compileReport(
+                            ResourceUtils.getFile(pathCommunity + "cooperations.jrxml").getAbsolutePath()),
+                    empParams,
+                    new JREmptyDataSource());
+
+            File receipt = new File("cooperations.pdf");
+            FileUtils.writeByteArrayToFile(receipt, JasperExportManager.exportReportToPdf(empReport));
+            return receipt;
+        } catch (JRException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private List<DebtorsDto> parseDebtors(List<PaymentEntity> payments) {
         List<DebtorsDto> debtors = new ArrayList<>();
         payments.forEach(paymentEntity -> {

@@ -23,4 +23,6 @@ public interface PaymentService {
     File createReceipt(Long associatedId, Long cooperationId, String token) ;
 
     File generateReport(Long cooperationId);
+
+    File generateReportCooperations(Long cooperationId);
 }
